@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TD Algorithmes - Les Bases Fondamentales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(120deg, #2980b9 0%, #8e44ad 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .info {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .exercice {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .exercice:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2980b9;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .niveau {
+            background: #27ae60;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .niveau.facile { background: #27ae60; }
+        .niveau.moyen { background: #f39c12; }
+        .niveau.difficile { background: #e74c3c; }
+
+        pre.code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+        }
+
+        .resultat-attendu {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #155724;
+        }
+
+        .aide {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #856404;
+        }
+
+        .aide::before {
+            content: "💡 Aide : ";
+            font-weight: bold;
+        }
+
+        .espace-reponse {
+            background: #f0f8ff;
+            border: 2px dashed #3498db;
+            padding: 40px 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+            min-height: 500px;
+            position: relative;
+            page-break-inside: avoid;
+        }
+
+        .espace-reponse.large {
+            min-height: 700px;
+        }
+
+        .espace-reponse.extra-large {
+            min-height: 900px;
+        }
+
+        .espace-reponse::before {
+            content: "📝 Écrivez votre algorithme ici :";
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            color: #3498db;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        .question {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #dee2e6;
+        }
+
+        .question h3 {
+            color: #495057;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .important {
+            background: #ffe6e6;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+            margin: 15px 0;
+        }
+
+        .numero {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .validation {
+            background: #d1f2eb;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .keyword {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .comment {
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+                max-width: 100%;
+            }
+            .exercice {
+                page-break-inside: avoid;
+            }
+            .espace-reponse {
+                min-height: 400px !important;
+            }
+            .espace-reponse.large {
+                min-height: 600px !important;
+            }
+            .espace-reponse.extra-large {
+                min-height: 800px !important;
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TD Algorithmes - Les Bases</h1>
+        <p class="info">BTS CIEL 1ère année - Maîtrise des fondamentaux</p>
+
+        <div class="exercice">
+            <h2><span class="numero">1</span>Variables et Types <span class="niveau facile">FACILE</span></h2>
+            
+            <div class="question">
+                <h3>Exercice 1.1 : Déclaration et affectation</h3>
+                <p>Complétez l'algorithme suivant pour calculer le prix TTC d'un article :</p>
+                
+<pre class="code">ALGORITHME CalculPrixTTC
+DEBUT
+    <span class="comment">// Déclarer les variables nécessaires</span>
+    _____ prixHT : _____
+    _____ tauxTVA : _____
+    _____ prixTTC : _____
+    
+    <span class="comment">// Initialiser les valeurs</span>
+    prixHT ← 100
+    tauxTVA ← _____  <span class="comment">// TVA à 20%</span>
+    
+    <span class="comment">// Calculer le prix TTC</span>
+    prixTTC ← _____
+    
+    AFFICHER("Prix TTC : ", _____)
+FIN</pre>
+
+                <div class="resultat-attendu">
+                    <strong>Résultat attendu :</strong> Prix TTC : 120
+                </div>
+
+                <div class="aide">
+                    Rappel : Pour une TVA à 20%, on peut calculer le prix TTC avec la formule : prixHT × (1 + tauxTVA)
+                </div>
+
+                <div class="espace-reponse"></div>
+            </div>
+
+            <div class="question">
+                <h3>Exercice 1.2 : Types de données</h3>
+                <p>Identifiez le type de variable approprié pour chaque donnée :</p>
+                
+                <table>
+                    <tr>
+                        <th>Donnée</th>
+                        <th>Type à choisir</th>
+                    </tr>
+                    <tr>
+                        <td>L'âge d'une personne</td>
+                        <td style="height: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td>Le nom d'un étudiant</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>La moyenne d'une classe</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Présent/Absent</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Le code postal</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="exercice">
+            <h2><span class="numero">2</span>Structures conditionnelles <span class="niveau facile">FACILE</span></h2>
+            
+            <div class="question">
+                <h3>Exercice 2.1 : Test simple</h3>
+                <p>Écrivez un algorithme qui détermine si un nombre est positif, négatif ou nul.</p>
+                
+<pre class="code">ALGORITHME TestNombre
+DEBUT
+    VAR nombre : ENTIER
+    
+    AFFICHER("Entrez un nombre : ")
+    LIRE(nombre)
+    
+    <span class="comment">// À compléter avec les tests</span>
+    
+FIN</pre>
+
+                <div class="espace-reponse"></div>
+            </div>
+
+            <div class="question">
+                <h3>Exercice 2.2 : Conditions multiples</h3>
+                <p>Créez un algorithme qui détermine la mention d'un étudiant selon sa moyenne :</p>
+                <ul>
+                    <li>Moyenne ≥ 16 : Très bien</li>
+                    <li>Moyenne ≥ 14 : Bien</li>
+                    <li>Moyenne ≥ 12 : Assez bien</li>
+                    <li>Moyenne ≥ 10 : Passable</li>
+                    <li>Moyenne < 10 : Insuffisant</li>
+                </ul>
+
+                <div class="aide">
+                    Attention à l'ordre des tests ! Commencez par la condition la plus restrictive.
+                </div>
+
+                <div class="espace-reponse large"></div>
+            </div>
+        </div>
+
+        <div class="exercice">
+            <h2><span class="numero">3</span>Boucles <span class="niveau moyen">MOYEN</span></h2>
+            
+            <div class="question">
+                <h3>Exercice 3.1 : Boucle POUR</h3>
+                <p>Écrivez un algorithme qui affiche la table de multiplication d'un nombre donné (de 1 à 10).</p>
+                
+                <div class="resultat-attendu">
+                    <strong>Exemple pour 7 :</strong><br>
+                    7 x 1 = 7<br>
+                    7 x 2 = 14<br>
+                    7 x 3 = 21<br>
+                    ...
+                </div>
+
+                <div class="espace-reponse"></div>
+            </div>
+
+            <div class="question">
+                <h3>Exercice 3.2 : Boucle TANT QUE</h3>
+                <p>Créez un algorithme qui demande à l'utilisateur de deviner un nombre entre 1 et 100. Le programme indique si le nombre est trop grand ou trop petit.</p>
+
+                <div class="aide">
+                    Utilisez une variable booléenne "trouve" pour contrôler la boucle.
+                </div>
+
+                <div class="espace-reponse large"></div>
+            </div>
+
+            <div class="question">
+                <h3>Exercice 3.3 : Somme et moyenne</h3>
+                <p>Écrivez un algorithme qui calcule la somme et la moyenne de N nombres saisis par l'utilisateur.</p>
+
+                <div class="espace-reponse large"></div>
+            </div>
+        </div>
+
+        <div class="exercice">
+            <h2><span class="numero">4</span>Tableaux <span class="niveau moyen">MOYEN</span></h2>
+            
+            <div class="question">
+                <h3>Exercice 4.1 : Manipulation de base</h3>
+                <p>Créez un algorithme qui remplit un tableau de 10 entiers avec les nombres pairs de 2 à 20, puis affiche le tableau.</p>
+
+                <div class="espace-reponse large"></div>
+            </div>
+
+            <div class="question">
+                <h3>Exercice 4.2 : Recherche dans un tableau</h3>
+                <p>Écrivez un algorithme qui recherche le maximum et le minimum dans un tableau de N nombres.</p>
+
+                <div class="aide">
+                    Initialisez max et min avec la première valeur du tableau, puis parcourez le reste.
+                </div>
+
+                <div class="espace-reponse large"></div>
+            </div>
+        </div>
+
+        <div class="exercice">
+            <h2><span class="numero">5</span>Fonctions et procédures <span class="niveau difficile">DIFFICILE</span></h2>
+            
+            <div class="question">
+                <h3>Exercice 5.1 : Création de fonction</h3>
+                <p>Créez une fonction qui calcule la factorielle d'un nombre n (n! = 1 × 2 × 3 × ... × n).</p>
+
+                <div class="resultat-attendu">
+                    <strong>Exemples :</strong><br>
+                    factorielle(5) = 120<br>
+                    factorielle(0) = 1<br>
+                    factorielle(3) = 6
+                </div>
+
+                <div class="espace-reponse large"></div>
+            </div>
+
+            <div class="question">
+                <h3>Exercice 5.2 : Procédure avec paramètres</h3>
+                <p>Créez une procédure qui échange les valeurs de deux variables.</p>
+
+                <div class="aide">
+                    Attention au passage par référence vs passage par valeur !
+                </div>
+
+                <div class="espace-reponse large"></div>
+            </div>
+        </div>
+
+        <div class="exercice">
+            <h2><span class="numero">6</span>Exercice de synthèse <span class="niveau difficile">DIFFICILE</span></h2>
+            
+            <div class="question">
+                <h3>Gestion de notes d'étudiants</h3>
+                <p>Créez un programme complet qui :</p>
+                <ol>
+                    <li>Demande le nombre d'étudiants (max 30)</li>
+                    <li>Pour chaque étudiant, saisit 3 notes</li>
+                    <li>Calcule la moyenne de chaque étudiant</li>
+                    <li>Affiche :
+                        <ul>
+                            <li>La moyenne de chaque étudiant</li>
+                            <li>La moyenne générale de la classe</li>
+                            <li>Le nombre d'étudiants ayant la moyenne (≥10)</li>
+                            <li>La meilleure moyenne</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <div class="important">
+                    <strong>⚠️ Contraintes :</strong>
+                    <ul>
+                        <li>Les notes sont comprises entre 0 et 20</li>
+                        <li>Vérifiez la validité des saisies</li>
+                        <li>Utilisez des tableaux pour stocker les données</li>
+                    </ul>
+                </div>
+
+                <div class="espace-reponse extra-large"></div>
+            </div>
+        </div>
+
+        <div class="validation">
+            <h2 style="color: #27ae60;">✅ Auto-évaluation</h2>
+            <p><strong>Vérifiez que vous maîtrisez :</strong></p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>☐ La déclaration et l'utilisation des variables</li>
+                <li>☐ Les différents types de données</li>
+                <li>☐ Les structures conditionnelles (SI/SINON)</li>
+                <li>☐ Les boucles (POUR, TANT QUE, REPETER)</li>
+                <li>☐ La manipulation des tableaux</li>
+                <li>☐ La création de fonctions et procédures</li>
+                <li>☐ La résolution de problèmes complexes</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

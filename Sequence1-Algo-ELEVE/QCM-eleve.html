@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM - Initiation à l'Algorithmique BTS CIEL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        h1 {
+            color: white;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.95);
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            font-weight: 300;
+        }
+
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            height: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 50px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .question-counter {
+            text-align: center;
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .correction-header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            display: none;
+        }
+
+        .correction-mode .correction-header {
+            display: block;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .correction-mode .question-counter,
+        .correction-mode .progress-container {
+            display: none;
+        }
+
+        .score-summary {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 15px 0;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            animation: slideInUp 0.5s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            min-width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(103,58,183,0.3);
+        }
+
+        .question-text {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            color: #2c3e50;
+            font-weight: 500;
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, rgba(103,58,183,0.15), rgba(118,75,162,0.15));
+            color: #673AB7;
+            border: 1px solid rgba(103,58,183,0.2);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 18px 25px;
+            border-radius: 15px;
+            border: 2px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(103,58,183,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .option:hover {
+            border-color: #9C27B0;
+            background: rgba(156,39,176,0.05);
+            transform: translateX(5px);
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover .radio-custom {
+            border-color: #9C27B0;
+        }
+
+        .option input[type="radio"]:checked ~ .radio-custom {
+            border-color: #673AB7;
+            background: #673AB7;
+        }
+
+        .option input[type="radio"]:checked ~ .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .option-letter {
+            font-weight: 700;
+            margin-right: 15px;
+            color: #673AB7;
+            font-size: 1.2rem;
+        }
+
+        .option-text {
+            flex: 1;
+            color: #34495e;
+        }
+
+        .option input[type="radio"]:checked ~ .option-text {
+            color: #673AB7;
+            font-weight: 500;
+        }
+
+        .check-mark, .cross-mark {
+            margin-left: auto;
+            font-weight: bold;
+            font-size: 1.3rem;
+            display: none;
+        }
+
+        .check-mark {
+            color: #4CAF50;
+        }
+
+        .cross-mark {
+            color: #f44336;
+        }
+
+        /* Styles pour la correction */
+        .correction-mode .option {
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .correction-mode .option.correct-answer {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: #4CAF50;
+        }
+
+        .correction-mode .option.wrong-answer {
+            background: rgba(244, 67, 54, 0.1);
+            border-color: #f44336;
+        }
+
+        .correction-mode .option.user-wrong {
+            opacity: 0.7;
+        }
+
+        .correction-mode .correct-answer .check-mark {
+            display: block;
+        }
+
+        .correction-mode .wrong-answer .cross-mark {
+            display: block;
+        }
+
+        .explanation-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .correction-mode .explanation-box {
+            display: block;
+            animation: slideInUp 0.5s ease;
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .explanation-text {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .code-example {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .submit-container {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .submit-btn, .back-to-quiz-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(103,58,183,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before, .back-to-quiz-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.3s ease;
+        }
+
+        .submit-btn:hover, .back-to-quiz-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(103,58,183,0.4);
+        }
+
+        .submit-btn:hover::before, .back-to-quiz-btn:hover::before {
+            left: 100%;
+        }
+
+        .correction-mode .submit-container {
+            display: none;
+        }
+
+        /* Modal de résultats */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.5s ease;
+        }
+
+        .score-display {
+            font-size: 4rem;
+            font-weight: 700;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-message {
+            font-size: 1.3rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .review-btn {
+            background: white;
+            color: #673AB7;
+            border: 2px solid #673AB7;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Timer */
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-weight: 600;
+            color: #673AB7;
+            font-size: 1.1rem;
+            z-index: 100;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -40%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .question-card {
+                padding: 25px;
+            }
+            
+            .timer {
+                position: static;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="timer" id="timer">⏱️ 00:00</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📝 QCM d'Algorithmique</h1>
+            <p class="subtitle">BTS CIEL - Testez vos connaissances</p>
+        </div>
+
+        <div class="correction-header">
+            <h2 style="color: #673AB7;">📊 Correction du QCM</h2>
+            <div class="score-summary" id="correctionScore">0/10</div>
+            <button class="back-to-quiz-btn" onclick="exitCorrectionMode()">🔄 Nouveau QCM</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="question-counter" id="questionCounter">
+            Questions répondues : <span id="answered">0</span> / 10
+        </div>
+
+        <form id="qcmForm">
+            <!-- Question 1 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">1</div>
+                    <div class="question-text">Un algorithme doit obligatoirement :</div>
+                </div>
+                <div class="category-badge">Concepts fondamentaux</div>
+                <div class="options-container">
+                    <label class="option" data-question="q1" data-value="A">
+                        <input type="radio" name="q1" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">Être écrit en Python</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q1" data-value="B">
+                        <input type="radio" name="q1" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">Se terminer après un nombre fini d'étapes</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q1" data-value="C">
+                        <input type="radio" name="q1" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">Utiliser des boucles</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q1" data-value="D">
+                        <input type="radio" name="q1" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">Avoir 10 lignes maximum</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        Un algorithme doit être <strong>fini</strong> (se terminer après un nombre fini d'étapes), <strong>défini</strong> (sans ambiguïté), avoir des <strong>données</strong> typées, produire un <strong>résultat</strong>, et être <strong>effectif</strong> (réalisable).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">2</div>
+                    <div class="question-text">Quelle boucle s'exécute au moins une fois ?</div>
+                </div>
+                <div class="category-badge">Structures de contrôle</div>
+                <div class="options-container">
+                    <label class="option" data-question="q2" data-value="A">
+                        <input type="radio" name="q2" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">TANT QUE</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q2" data-value="B">
+                        <input type="radio" name="q2" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">POUR</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q2" data-value="C">
+                        <input type="radio" name="q2" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">RÉPÉTER...JUSQU'À</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q2" data-value="D">
+                        <input type="radio" name="q2" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">SI...ALORS</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        <strong>RÉPÉTER...JUSQU'À</strong> exécute le code AU MOINS une fois, puis teste la condition à la fin.<br><br>
+                        <strong>⚠️ Important :</strong> Python n'a pas de structure native RÉPÉTER...JUSQU'À !<br><br>
+                        Pour la simuler, on utilise :
+                        <div class="code-example"># Simulation de RÉPÉTER...JUSQU'À
+while True:
+    # actions (exécutées au moins une fois)
+    if condition:  # test à la fin
+        break</div>
+                        <strong>Différence avec while classique :</strong>
+                        <div class="code-example"># TANT QUE (while classique)
+while condition:  # teste AVANT la 1ère exécution
+    # actions (peuvent ne jamais s'exécuter)
+    
+# Si condition est False dès le début,
+# le code n'est jamais exécuté !</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">3</div>
+                    <div class="question-text">Pour tester si un nombre n est pair en Python :</div>
+                </div>
+                <div class="category-badge">Python</div>
+                <div class="options-container">
+                    <label class="option" data-question="q3" data-value="A">
+                        <input type="radio" name="q3" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">if n / 2 == 0:</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q3" data-value="B">
+                        <input type="radio" name="q3" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">if n % 2 == 0:</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q3" data-value="C">
+                        <input type="radio" name="q3" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">if n == 2:</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q3" data-value="D">
+                        <input type="radio" name="q3" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">if n * 2:</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        L'opérateur % renvoie le reste de la division. Un nombre est pair si n % 2 == 0.
+                        <div class="code-example">if n % 2 == 0:
+    print("pair")
+else:
+    print("impair")</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">4</div>
+                    <div class="question-text">Après : a = 5 ; b = a ; a = 10</div>
+                </div>
+                <div class="category-badge">Variables</div>
+                <div class="options-container">
+                    <label class="option" data-question="q4" data-value="A">
+                        <input type="radio" name="q4" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">a = 5, b = 5</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q4" data-value="B">
+                        <input type="radio" name="q4" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">a = 10, b = 10</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q4" data-value="C">
+                        <input type="radio" name="q4" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">a = 10, b = 5</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q4" data-value="D">
+                        <input type="radio" name="q4" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">a = 5, b = 10</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        Trace d'exécution :
+                        <div class="code-example">a = 5   # a vaut 5
+b = a   # b vaut 5  
+a = 10  # a vaut 10, b reste 5</div>
+                        <strong>Important :</strong> b reçoit une copie de la valeur de a.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">5</div>
+                    <div class="question-text">Dans un organigramme, un losange représente :</div>
+                </div>
+                <div class="category-badge">Représentation</div>
+                <div class="options-container">
+                    <label class="option" data-question="q5" data-value="A">
+                        <input type="radio" name="q5" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">Une instruction</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q5" data-value="B">
+                        <input type="radio" name="q5" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">Une condition</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q5" data-value="C">
+                        <input type="radio" name="q5" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">Une entrée/sortie</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q5" data-value="D">
+                        <input type="radio" name="q5" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">Le début du programme</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        Symboles standards :<br>
+                        ◇ <strong>Losange</strong> : Test/Condition<br>
+                        ▭ <strong>Rectangle</strong> : Instruction<br>
+                        ▱ <strong>Parallélogramme</strong> : Entrée/Sortie<br>
+                        ⬭ <strong>Rectangle arrondi</strong> : Début/Fin
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">6</div>
+                    <div class="question-text">Pour échanger a et b en pseudo-code :</div>
+                </div>
+                <div class="category-badge">Algorithmes</div>
+                <div class="options-container">
+                    <label class="option" data-question="q6" data-value="A">
+                        <input type="radio" name="q6" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">On utilise 1 variable temporaire</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q6" data-value="B">
+                        <input type="radio" name="q6" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">On utilise 2 variables temporaires</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q6" data-value="C">
+                        <input type="radio" name="q6" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">C'est impossible sans temporaire</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q6" data-value="D">
+                        <input type="radio" name="q6" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">On copie directement les valeurs</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        Méthode classique :
+                        <div class="code-example">temp = a
+a = b
+b = temp
+
+# Python permet aussi : a, b = b, a</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">7</div>
+                    <div class="question-text">Pour lire un entier en Python :</div>
+                </div>
+                <div class="category-badge">Python</div>
+                <div class="options-container">
+                    <label class="option" data-question="q7" data-value="A">
+                        <input type="radio" name="q7" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">input()</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q7" data-value="B">
+                        <input type="radio" name="q7" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">int(input())</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q7" data-value="C">
+                        <input type="radio" name="q7" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">read()</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q7" data-value="D">
+                        <input type="radio" name="q7" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">get_integer()</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        input() renvoie une chaîne. Pour un entier, il faut convertir :
+                        <div class="code-example">n = int(input("Nombre : "))
+f = float(input("Décimal : "))</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">8</div>
+                    <div class="question-text">for i in range(3): exécute la boucle :</div>
+                </div>
+                <div class="category-badge">Python</div>
+                <div class="options-container">
+                    <label class="option" data-question="q8" data-value="A">
+                        <input type="radio" name="q8" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">1 fois</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q8" data-value="B">
+                        <input type="radio" name="q8" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">2 fois</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q8" data-value="C">
+                        <input type="radio" name="q8" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">3 fois</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q8" data-value="D">
+                        <input type="radio" name="q8" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">4 fois</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        range(3) génère 0, 1, 2 (3 valeurs) :
+                        <div class="code-example">for i in range(3):
+    print(i)  # 0, 1, 2
+
+range(5)     # 0,1,2,3,4
+range(2, 5)  # 2,3,4</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">9</div>
+                    <div class="question-text">Les 3 structures fondamentales sont :</div>
+                </div>
+                <div class="category-badge">Structures</div>
+                <div class="options-container">
+                    <label class="option" data-question="q9" data-value="A">
+                        <input type="radio" name="q9" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">Variable, Fonction, Classe</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q9" data-value="B">
+                        <input type="radio" name="q9" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">Séquence, Sélection, Répétition</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q9" data-value="C">
+                        <input type="radio" name="q9" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">Début, Milieu, Fin</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q9" data-value="D">
+                        <input type="radio" name="q9" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">Input, Process, Output</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        <strong>Séquence</strong> : Instructions l'une après l'autre<br>
+                        <strong>Sélection</strong> : Choix conditionnel (if/else)<br>
+                        <strong>Répétition</strong> : Boucles (for, while)<br><br>
+                        Ces trois structures suffisent pour tout algorithme.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">10</div>
+                    <div class="question-text">Notes: 10, 15, 12 | Coeffs: 1, 2, 1 | Moyenne = ?</div>
+                </div>
+                <div class="category-badge">Calculs</div>
+                <div class="options-container">
+                    <label class="option" data-question="q10" data-value="A">
+                        <input type="radio" name="q10" value="A">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">A)</span>
+                        <span class="option-text">12.33</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q10" data-value="B">
+                        <input type="radio" name="q10" value="B">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">B)</span>
+                        <span class="option-text">13.00</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q10" data-value="C">
+                        <input type="radio" name="q10" value="C">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">C)</span>
+                        <span class="option-text">12.50</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                    <label class="option" data-question="q10" data-value="D">
+                        <input type="radio" name="q10" value="D">
+                        <div class="radio-custom"></div>
+                        <span class="option-letter">D)</span>
+                        <span class="option-text">14.00</span>
+                        <span class="check-mark">✓</span>
+                        <span class="cross-mark">✗</span>
+                    </label>
+                </div>
+                <div class="explanation-box">
+                    <div class="explanation-title">💡 Explication</div>
+                    <div class="explanation-text">
+                        Calcul détaillé : (10×1 + 15×2 + 12×1) / (1+2+1) = 52/4 = 13.00
+                        <div class="code-example">numerateur = 10*1 + 15*2 + 12*1  # = 52
+denominateur = 1 + 2 + 1          # = 4
+moyenne = numerateur / denominateur
+# moyenne = 52 / 4 = 13.0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submit-container">
+                <button type="submit" class="submit-btn">📊 Valider le QCM</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal des résultats -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h2 style="color: #673AB7; margin-bottom: 20px;">🎯 Résultats du QCM</h2>
+            <div class="score-display" id="scoreDisplay">0/10</div>
+            <p class="score-message" id="scoreMessage">Message</p>
+            <div class="modal-buttons">
+                <button class="modal-btn retry-btn" onclick="resetQCM()">🔄 Recommencer</button>
+                <button class="modal-btn review-btn" onclick="showCorrection()">📖 Voir la correction</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Réponses correctes
+        const correctAnswers = {
+            q1: 'B',
+            q2: 'C',
+            q3: 'B',
+            q4: 'C',
+            q5: 'B',
+            q6: 'A',
+            q7: 'B',
+            q8: 'C',
+            q9: 'B',
+            q10: 'B'
+        };
+
+        let userAnswers = {};
+        let currentScore = 0;
+
+        // Timer
+        let seconds = 0;
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('timer').textContent = 
+                    `⏱️ ${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Démarrer le timer au chargement
+        startTimer();
+
+        // Mise à jour du compteur de questions
+        function updateProgress() {
+            const totalQuestions = 10;
+            let answered = 0;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (document.querySelector(`input[name="q${i}"]:checked`)) {
+                    answered++;
+                }
+            }
+            
+            document.getElementById('answered').textContent = answered;
+            const progressPercent = (answered / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+        }
+
+        // Écouter les changements sur les radio buttons
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateProgress);
+        });
+
+        // Soumission du formulaire
+        document.getElementById('qcmForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Vérifier que toutes les questions sont répondues
+            let allAnswered = true;
+            for (let i = 1; i <= 10; i++) {
+                const answer = document.querySelector(`input[name="q${i}"]:checked`);
+                if (!answer) {
+                    allAnswered = false;
+                    break;
+                } else {
+                    userAnswers[`q${i}`] = answer.value;
+                }
+            }
+            
+            if (!allAnswered) {
+                alert('⚠️ Veuillez répondre à toutes les questions avant de valider !');
+                return;
+            }
+            
+            // Calculer le score
+            currentScore = 0;
+            for (let i = 1; i <= 10; i++) {
+                if (userAnswers[`q${i}`] === correctAnswers[`q${i}`]) {
+                    currentScore++;
+                }
+            }
+            
+            // Arrêter le timer
+            stopTimer();
+            
+            // Afficher les résultats
+            showResults(currentScore);
+        });
+
+        function showResults(score) {
+            const modal = document.getElementById('resultModal');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const scoreMessage = document.getElementById('scoreMessage');
+            
+            scoreDisplay.textContent = `${score}/10`;
+            
+            // Message personnalisé selon le score
+            let message = '';
+            if (score === 10) {
+                message = '🏆 Parfait ! Vous maîtrisez parfaitement les concepts !';
+            } else if (score >= 8) {
+                message = '🎉 Excellent travail ! Vous avez une très bonne compréhension.';
+            } else if (score >= 6) {
+                message = '👍 Bien joué ! Quelques points à revoir.';
+            } else if (score >= 4) {
+                message = '📚 Résultat encourageant, mais il faut encore étudier.';
+            } else {
+                message = '💪 Ne vous découragez pas ! Revoyez le cours et réessayez.';
+            }
+            
+            scoreMessage.textContent = message;
+            
+            // Afficher le temps
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            scoreMessage.innerHTML += `<br><small>Temps : ${minutes}min ${secs}s</small>`;
+            
+            modal.style.display = 'block';
+        }
+
+        function showCorrection() {
+            // Fermer le modal
+            document.getElementById('resultModal').style.display = 'none';
+            
+            // Activer le mode correction
+            document.body.classList.add('correction-mode');
+            
+            // Afficher le score dans l'en-tête de correction
+            document.getElementById('correctionScore').textContent = `${currentScore}/10`;
+            
+            // Marquer les bonnes et mauvaises réponses
+            for (let i = 1; i <= 10; i++) {
+                const questionName = `q${i}`;
+                const correctAnswer = correctAnswers[questionName];
+                const userAnswer = userAnswers[questionName];
+                
+                // Marquer toutes les options de cette question
+                document.querySelectorAll(`[data-question="${questionName}"]`).forEach(option => {
+                    const optionValue = option.getAttribute('data-value');
+                    
+                    if (optionValue === correctAnswer) {
+                        option.classList.add('correct-answer');
+                    } else if (optionValue === userAnswer && userAnswer !== correctAnswer) {
+                        option.classList.add('wrong-answer');
+                        option.classList.add('user-wrong');
+                    }
+                });
+            }
+            
+            // Remonter en haut de la page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function exitCorrectionMode() {
+            // Désactiver le mode correction
+            document.body.classList.remove('correction-mode');
+            
+            // Retirer les classes de correction
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('correct-answer', 'wrong-answer', 'user-wrong');
+            });
+            
+            // Réinitialiser le QCM
+            resetQCM();
+        }
+
+        function resetQCM() {
+            // Réinitialiser le formulaire
+            document.getElementById('qcmForm').reset();
+            
+            // Réinitialiser les réponses utilisateur
+            userAnswers = {};
+            currentScore = 0;
+            
+            // Réinitialiser le timer
+            seconds = 0;
+            document.getElementById('timer').textContent = '⏱️ 00:00';
+            startTimer();
+            
+            // Réinitialiser la progression
+            updateProgress();
+            
+            // Fermer le modal
+            document.getElementById('resultModal').style.display = 'none';
+            
+            // Remonter en haut de la page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Fermer le modal en cliquant en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('resultModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

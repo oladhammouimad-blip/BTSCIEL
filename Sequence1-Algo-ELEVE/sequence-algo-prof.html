@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séquence "Initiation à l'algorithmique" - Vue d'ensemble</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .info-card {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .info-card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .info-card h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .info-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .progression-timeline {
+            padding: 40px;
+        }
+
+        .timeline-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .timeline-header h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .session-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .session-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .session-1 { border-left-color: #667eea; }
+        .session-2 { border-left-color: #764ba2; }
+        .session-3 { border-left-color: #3498db; }
+        .session-4 { border-left-color: #2ecc71; }
+        .session-5 { border-left-color: #e67e22; }
+        .session-6 { border-left-color: #e74c3c; }
+        .session-7 { border-left-color: #f39c12; }
+        .session-8 { border-left-color: #16a085; }
+
+        .session-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .session-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .session-1 .session-icon { background: #667eea; }
+        .session-2 .session-icon { background: #764ba2; }
+        .session-3 .session-icon { background: #3498db; }
+        .session-4 .session-icon { background: #2ecc71; }
+        .session-5 .session-icon { background: #e67e22; }
+        .session-6 .session-icon { background: #e74c3c; }
+        .session-7 .session-icon { background: #f39c12; }
+        .session-8 .session-icon { background: #16a085; }
+
+        .session-title {
+            flex: 1;
+        }
+
+        .session-title h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .session-title .session-subtitle {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .session-duration {
+            background: #ecf0f1;
+            color: #7f8c8d;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .session-content {
+            margin: 20px 0;
+        }
+
+        .activity-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .activity-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .activity-list li:before {
+            content: "▸";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .production {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 3px solid #2ecc71;
+        }
+
+        .production strong {
+            color: #27ae60;
+        }
+
+        .competences-section {
+            background: #f8f9fa;
+            padding: 40px;
+        }
+
+        .competences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .competence-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .competence-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .competence-card h4:before {
+            content: "✔";
+            background: #667eea;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        .competence-list {
+            list-style: none;
+        }
+
+        .competence-list li {
+            padding: 5px 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .competence-list li:before {
+            content: "•";
+            color: #667eea;
+            margin-right: 10px;
+        }
+
+        .evaluation-section {
+            background: white;
+            padding: 40px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .evaluation-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .evaluation-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .tools-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tool-badge {
+            background: #34495e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .timeline {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-bar {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .session-card:hover {
+                transform: none;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💻 Initiation à l'algorithmique</h1>
+            <p class="subtitle">BTS CIEL Option Informatique et Réseaux</p>
+        </header>
+
+        <div class="info-bar">
+            <div class="info-card">
+                <div class="icon">⏰</div>
+                <h3>Durée Totale</h3>
+                <p><strong>5 heures</strong></p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🎯</div>
+                <h3>Pôle d'activité</h3>
+                <p>Valorisation de la donnée<br>& cybersécurité</p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🎓</div>
+                <h3>Compétence CIEL</h3>
+                <p>C08 - Coder</p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🤝</div>
+                <h3>Co-intervention</h3>
+                <p>Mathématiques - STI<br><strong>Algorithmique appliquée</strong></p>
+            </div>
+        </div>
+
+        <div class="progression-timeline">
+            <div class="timeline-header">
+                <h2>📊 Progression Pédagogique</h2>
+                <p>De la compréhension des algorithmes à la programmation Python</p>
+            </div>
+
+            <div class="timeline">
+                <div class="session-card session-1">
+                    <div class="session-header">
+                        <div class="session-icon">🚀</div>
+                        <div class="session-title">
+                            <h3>SÉANCE 1 : DÉCOUVERTE</h3>
+                            <p class="session-subtitle">Introduction aux algorithmes et programmation structurée</p>
+                            <span class="session-duration">1h</span>
+                        </div>
+                    </div>
+                    <div class="session-content">
+                        <ul class="activity-list">
+                            <li>Qu'est-ce qu'un algorithme ? Définition et 5 caractéristiques (15 min)</li>
+                            <li>Démarche de résolution : Problème → Algorithme → Programme (15 min)</li>
+                            <li>Programmation structurée : blocs et instructions (15 min)</li>
+                            <li>Premier exercice guidé : analyse d'un algorithme simple (15 min)</li>
+                        </ul>
+                        <div class="production">
+                            <strong>🎯 Production :</strong> Fiche synthèse avec définitions et premier algorithme analysé
+                        </div>
+                    </div>
+                </div>
+
+                <div class="session-card session-2">
+                    <div class="session-header">
+                        <div class="session-icon">🔄</div>
+                        <div class="session-title">
+                            <h3>SÉANCE 2 : STRUCTURES DE CONTRÔLE</h3>
+                            <p class="session-subtitle">Enchaînements, représentations et exercices pratiques</p>
+                            <span class="session-duration">2h</span>
+                        </div>
+                    </div>
+                    <div class="session-content">
+                        <ul class="activity-list">
+                            <li>Enchaînements : séquences et structure SI/ALORS/SINON (30 min)</li>
+                            <li>Boucles : TANT QUE et RÉPÉTER avec exemples (30 min)</li>
+                            <li>Représentation : organigrammes vs pseudo-code (20 min)</li>
+                            <li>Exercices pratiques : variables, affectations, permutations (40 min)</li>
+                        </ul>
+                        <div class="production">
+                            <strong>🎯 Production :</strong> Cahier d'exercices avec organigrammes et pseudo-codes des structures de base
+                        </div>
+                    </div>
+                </div>
+
+                <div class="session-card session-3">
+                    <div class="session-header">
+                        <div class="session-icon">🐍</div>
+                        <div class="session-title">
+                            <h3>SÉANCE 3 : PYTHON & CODEX</h3>
+                            <p class="session-subtitle">Implémentation Python et défis ludiques</p>
+                            <span class="session-duration">2h</span>
+                        </div>
+                    </div>
+                    <div class="session-content">
+                        <ul class="activity-list">
+                            <li>Correspondances pseudo-code → Python avec Thonny (30 min)</li>
+                            <li>TP Python : conversion des exercices algorithmiques (30 min)</li>
+                            <li>Défis Codex Alien 1-7 : fonctions, variables, conditions et boucles (1h)</li>
+                        </ul>
+                        <div class="production">
+                            <strong>🎯 Production :</strong> Programmes Python fonctionnels et solutions des défis Alien commentées
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="competences-section">
+            <div class="timeline-header">
+                <h2>✅ Compétences Développées</h2>
+                <p>Référentiel BTS CIEL - Compétence C08 : Coder</p>
+            </div>
+
+            <div class="competences-grid">
+                <div class="competence-card">
+                    <h4>Analyse algorithmique</h4>
+                    <ul class="competence-list">
+                        <li>Identifier les données en entrée/sortie</li>
+                        <li>Décomposer un problème complexe</li>
+                        <li>Choisir les structures adaptées</li>
+                        <li>Optimiser la complexité algorithmique</li>
+                    </ul>
+                </div>
+
+                <div class="competence-card">
+                    <h4>Programmation structurée</h4>
+                    <ul class="competence-list">
+                        <li>Utiliser les structures de contrôle</li>
+                        <li>Implémenter des fonctions</li>
+                        <li>Gérer les variables et leur portée</li>
+                        <li>Écrire du code lisible et documenté</li>
+                    </ul>
+                </div>
+
+                <div class="competence-card">
+                    <h4>Python et outils</h4>
+                    <ul class="competence-list">
+                        <li>Maîtriser la syntaxe Python de base</li>
+                        <li>Utiliser l'IDE Thonny efficacement</li>
+                        <li>Déboguer et tester le code</li>
+                        <li>Convertir pseudo-code en Python</li>
+                    </ul>
+                </div>
+
+                <div class="competence-card">
+                    <h4>Raisonnement logique</h4>
+                    <ul class="competence-list">
+                        <li>Construire une démarche méthodique</li>
+                        <li>Valider la cohérence des résultats</li>
+                        <li>Documenter les choix algorithmiques</li>
+                        <li>Collaborer en co-intervention</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="evaluation-section">
+            <div class="timeline-header">
+                <h2>📝 Modalités d'Évaluation</h2>
+                <p>Évaluation progressive adaptée au format court</p>
+            </div>
+
+            <div class="evaluation-grid">
+                <div class="evaluation-card">
+                    <h4>📄 Évaluation Continue</h4>
+                    <ul class="competence-list">
+                        <li>Participation active en séance</li>
+                        <li>Exercices pratiques corrigés</li>
+                        <li>Auto-évaluation guidée</li>
+                        <li>Questions/réponses en classe</li>
+                    </ul>
+                </div>
+
+                <div class="evaluation-card">
+                    <h4>💻 Travaux Pratiques</h4>
+                    <ul class="competence-list">
+                        <li>Mini-programmes Python</li>
+                        <li>Défis Codex Alien (1 à 7)</li>
+                        <li>Conversion pseudo-code → Python</li>
+                    </ul>
+                </div>
+
+                <div class="evaluation-card">
+                    <h4>✅ Évaluation Finale</h4>
+                    <ul class="competence-list">
+                        <li>QCM structures algorithmiques (30 min)</li>
+                        <li>Exercice pratique Python (30 min)</li>
+                        <li>Analyse d'algorithme (20 min)</li>
+                    </ul>
+                </div>
+
+                <div class="evaluation-card">
+                    <h4>🎯 Adaptation Pédagogique</h4>
+                    <ul class="competence-list">
+                        <li><strong>Difficultés :</strong> Fiches méthode simplifiées</li>
+                        <li><strong>Autonomes :</strong> Défis Alien supplémentaires</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="tools-bar">
+                <span class="tool-badge">🐍 Python 3</span>
+                <span class="tool-badge">💻 Thonny IDE</span>
+                <span class="tool-badge">📝 Pseudo-code</span>
+            </div>
+            <p><strong>Introduction aux bases de la programmation en Python</strong></p>
+            <p style="margin-top: 10px; font-size: 0.95rem; opacity: 0.9;">Mme MASSET - M. NEGGAOUI</p>
+        </footer>
+    </div>
+</body>
+</html>
