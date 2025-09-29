@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDC - Gestion Centralisée de Logs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation améliorée */
+        nav {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        nav .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        nav.scrolled .nav-logo {
+            color: var(--primary);
+            text-shadow: none;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.7rem 1.2rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav.scrolled a {
+            color: var(--dark);
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        nav.scrolled a:hover {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        nav a.active {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        nav.scrolled a.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Mobile menu button */
+        .menu-toggle {
+            display: none;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--white);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled .menu-toggle span {
+            background: var(--dark);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        header {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 40%;
+            height: 200%;
+            background: var(--gradient);
+            opacity: 0.1;
+            transform: rotate(45deg);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border: none;
+            padding: 0;
+            display: block;
+            font-weight: 800;
+        }
+
+        header h2::after {
+            display: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Sections */
+        section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.6s ease;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            right: -20px;
+            width: 20px;
+            height: 3px;
+            background: var(--secondary);
+        }
+
+        h3 {
+            color: var(--primary-dark);
+            margin: 1.5rem 0 1rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--secondary);
+        }
+
+        /* Requirements */
+        .requirement {
+            background: linear-gradient(135deg, var(--light) 0%, var(--white) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 5px solid var(--secondary);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .requirement::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .requirement:hover::before {
+            opacity: 0.05;
+        }
+
+        .requirement:hover {
+            transform: translateX(10px);
+            box-shadow: var(--shadow);
+        }
+
+        .requirement h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .requirement h4::before {
+            content: '📌';
+            font-size: 1.2rem;
+        }
+
+        /* Lists */
+        ul {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        li {
+            margin: 0.5rem 0;
+            position: relative;
+            padding-left: 0.5rem;
+        }
+
+        li::marker {
+            color: var(--primary);
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background: var(--gradient);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light);
+        }
+
+        tr {
+            transition: background 0.3s ease;
+        }
+
+        tr:hover {
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        /* Diagram images */
+        .diagram-container {
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .diagram-container:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .diagram-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .diagram-container h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0 0.25rem;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .badge-success {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .badge-warning {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: var(--shadow);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            header h2 {
+                font-size: 1.6rem;
+            }
+
+            nav .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-logo {
+                font-size: 1.2rem;
+            }
+
+            .nav-logo span {
+                display: none;
+            }
+
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+                box-shadow: var(--shadow);
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            nav a {
+                width: 100%;
+                text-align: center;
+                color: var(--dark);
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .container {
+                margin-top: 100px;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            nav {
+                display: none;
+            }
+            
+            .container {
+                margin-top: 0;
+            }
+
+            section {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+
+        .slide-in {
+            animation: slideIn 0.6s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                📊 <span>Gestion Logs</span>
+            </div>
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul id="navMenu">
+                <li><a href="#home" class="active">🏠 Accueil</a></li>
+                <li><a href="#presentation">📋 Présentation</a></li>
+                <li><a href="#requirements">📝 Exigences</a></li>
+                <li><a href="#monitoring">🖥️ Monitoring</a></li>
+                <li><a href="#surveillance">🔍 Surveillance</a></li>
+                <li><a href="#devsecops">🔒 DevSecOps</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header id="home">
+            <h1>Cahier Des Charges (CDC)</h1>
+            <h2>Gestion Centralisée de Logs</h2>
+            
+            <div class="header-info">
+                <div class="info-card">
+                    <strong>BTS CIEL-IR</strong><br>
+                    Référence: CDC
+                </div>
+                <div class="info-card">
+                    <strong>Client</strong><br>
+                    Approuvé le: 01/09/2025
+                </div>
+                <div class="info-card">
+                    <strong>Chef de Projet</strong><br>
+                    Rédigé le: 01/09/2025
+                </div>
+            </div>
+        </header>
+
+        <section id="nature">
+            <h2>1. Nature du document</h2>
+            <p>Ce document est un cahier des charges et a pour but de décrire l'ensemble des exigences client relatives au développement du produit.</p>
+            
+            <p>La figure 1 présente le cycle de développement du produit et les documents associés, conformément à la norme de qualité <strong>ISO9001</strong>. L'axe principal de cette norme est la « satisfaction client » et a pour but de garantir la conformité du produit ainsi que la tenue des coûts et délais de développement.</p>
+            
+            <div style="margin-top: 2rem;">
+                <h4>📋 Documents du cycle de développement:</h4>
+                <ul>
+                    <li><strong>Cahier Des Charges (CDC)</strong>: Rédigé par le client et approuvé par le fournisseur. Il regroupe l'ensemble des exigences auxquelles le produit doit répondre.</li>
+                    <li><strong>Dossier De Conception (DDC)</strong>: Rédigé par le fournisseur et approuvé par le client. Ce dossier présente l'architecture fonctionnelle du produit développé.</li>
+                    <li><strong>Dossier De Vérification (DDV)</strong>: Rédigé par le fournisseur et approuvé par le client. Il décrit la manière de vérifier le bon fonctionnement du produit développé.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="presentation">
+            <h2>2. Présentation du produit à développer</h2>
+            
+            <h3>2.1. Objectif</h3>
+            <p>L'objectif de ce projet est de concevoir et de réaliser un programme de <strong>Gestion centralisée de logs</strong>.</p>
+            
+            <div style="background: linear-gradient(135deg, #ef444420 0%, #f59e0b20 100%); padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0;">
+                <h4 style="color: var(--danger);">🔒 Contexte de sécurité</h4>
+                <p>L'entreprise <strong>Cegid</strong> est exposée fortement au risque cyber. Le RSSI souhaite mettre en place une politique stricte de sécurité basée sur la règle du <strong>moindre privilège</strong> ou « least privilege ».</p>
+            </div>
+
+            <p>Pour que l'ensemble des collaborateurs adhèrent à cette politique de sécurité, le RSSI souhaite que l'outil de Gestion Centralisée de logs leur permettent de prendre conscience des contraintes de sécurité.</p>
+
+            <p>Pour cela, le RSSI veut développer une application capable de:</p>
+            <ul>
+                <li><span class="badge badge-primary">Trier</span> les logs du PC des collaborateurs</li>
+                <li><span class="badge badge-primary">Visualiser</span> les logs importants</li>
+                <li><span class="badge badge-primary">Enregistrer</span> les actions critiques</li>
+                <li><span class="badge badge-primary">Centraliser</span> les logs pour surveillance</li>
+            </ul>
+
+            <div class="diagram-container">
+                <h4>Figure 2 : Diagramme des cas d'utilisations</h4>
+                <img src="Images/CasUtilisation.png" alt="Diagramme des cas d'utilisations">
+            </div>
+
+            <h3>Cas d'utilisation détaillés</h3>
+            
+            <div class="requirement">
+                <h4>UC Monitorer l'environnement de travail local</h4>
+                <p>Cela consiste à sélectionner, visualiser et enregistrer les actions de l'utilisateur du poste concernant les services critiques de la machine de travail.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>UC Visualiser les logs</h4>
+                <p>Les logs seront visualisés en temps réel par l'utilisateur du poste.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>UC Enregistrer Actions Critiques</h4>
+                <p>En plus d'être visualisés, certains logs critiques seront enregistrés pour une exploitation ultérieure.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>UC Surveiller le SI</h4>
+                <p>Les logs seront transmis à un serveur distant pour exploitation par le RSSI (Responsable de la Sécurité du Système d'Information).</p>
+            </div>
+        </section>
+
+        <section id="requirements">
+            <h2>3. Exigences client du produit à développer</h2>
+            
+            <p>Ce chapitre détaille l'ensemble des exigences client du produit à développer. Chaque exigence est rédigée de manière concise et non ambiguë afin d'être vérifiable explicitement par l'équipe de développement.</p>
+
+            <div class="diagram-container">
+                <h4>Figure 3 : Diagramme des exigences</h4>
+                <img src="Images/DiagrammeExigences.png" alt="Diagramme des exigences">
+            </div>
+        </section>
+
+        <section id="monitoring">
+            <h2>3.1. REQ001.REQ003 : Monitorer le poste</h2>
+            
+            <div class="requirement">
+                <h4>REQ005 : Visualiser les logs</h4>
+                <p>Les logs sélectionnés et filtrés devront être actifs dans une console et/ou un terminal dédié de l'utilisateur.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ008 : Logs à surveiller</h4>
+                <p>Les logs à surveiller sont les suivants :</p>
+                <ul>
+                    <li>Demande de droits administrateur</li>
+                    <li>Connexion sur le poste local</li>
+                    <li>Événement système critique</li>
+                </ul>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ006 : Enregistrer les logs</h4>
+                <p>En plus d'une surveillance des logs de la REQ008, certaines commandes devront être enregistrées sur le postes de travail.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ009 : Logs à enregistrer</h4>
+                <p>Les connexions SSH clientes seront enregistrées dans un fichier txt qui contiendra les informations suivantes :</p>
+                <ul>
+                    <li>Date de la demande de connexion</li>
+                    <li>Heure de la demande de connexion</li>
+                    <li>Nom du poste client</li>
+                    <li>Nom de l'utilisateur connecté</li>
+                    <li>SSH : nom de l'utilisateur</li>
+                    <li>SSH : Adresse ou DNS du serveur</li>
+                    <li>SSH : Port de connexion</li>
+                </ul>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ007 : Transmission des logs</h4>
+                <p>Les logs des exigences précédentes seront transmis à un serveur spécifique pour une exploitation centralisée.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ018 : Menu</h4>
+                <p>On choisira l'action via un menu. Après l'action choisie, le programme proposera à nouveau le menu. On utilisera la touche 0[zéro] pour quitter le programme.</p>
+            </div>
+        </section>
+
+        <section id="surveillance">
+            <h2>3.2. REQ001.REQ002 : Surveiller le SI</h2>
+            
+            <div class="requirement">
+                <h4>REQ010 : Monitorer le SI</h4>
+                <p>Le RSSI doit avoir accès à une remontée des logs par poste sur une adresse dédiée et sécurisée.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ011 : Classement et alerte</h4>
+                <p>Les logs seront classés.</p>
+            </div>
+        </section>
+
+        <section id="devsecops">
+            <h2>3.3. REQ001.REQ004 : DevSecOps</h2>
+            
+            <p>Le développement de l'application sera effectué selon la logique <strong>DevSecOps</strong>. Les exigences ci-dessous détaillent celles-ci dans ce projet.</p>
+
+            <div class="requirement">
+                <h4>REQ012 : Open Source</h4>
+                <p>Afin de garantir une sécurité de l'exécution du code, le client souhaite avoir accès au code source de l'application qui sera développé sous licence <span class="badge badge-success">Apache2</span>.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ013 : Langage de programmation</h4>
+                <p>Le client souhaite que l'application soit développée en <span class="badge badge-primary">C++</span> pour des raisons de performances. La cible est <span class="badge badge-warning">Windows</span>, SE de tous les postes de travail de l'entreprise.</p>
+                <p>Le chef de projet choisit de développer sous <strong>VSCode</strong> avec l'extension <strong>C++</strong>.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ017 : Static Application Security Testing</h4>
+                <p>Des outils de tests de sécurité statiques seront utilisés pour analyser le code source et détecter les vulnérabilités potentielles.</p>
+            </div>
+
+            <div class="requirement">
+                <h4>REQ016 : Documentation</h4>
+                <p>Le code sera documenté au format <span class="badge badge-success">Markdown</span>. La documentation sera claire et complète pour faciliter la maintenance.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>BTS CIEL-IR</strong> - Cahier des Charges</p>
+            <p>Gestion Centralisée de Logs - Version 1.0</p>
+            <p style="margin-top: 1rem; opacity: 0.7;">© 2025 - Tous droits réservés</p>
+        </footer>
+    </div>
+
+    <script>
+        // Toggle mobile menu
+        function toggleMenu() {
+            const menu = document.getElementById('navMenu');
+            menu.classList.toggle('active');
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    document.getElementById('navMenu').classList.remove('active');
+                }
+            });
+        });
+
+        // Update active nav link on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            const sections = document.querySelectorAll('section[id], header[id]');
+            const navLinks = document.querySelectorAll('nav a[href^="#"]');
+            
+            // Navbar scroll effect
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            // Update active link
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section, .requirement').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

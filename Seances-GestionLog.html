@@ -1,0 +1,2599 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Complet - Projet Gestion de Logs C++</title>
+    <style>
+        @media print {
+            body { font-size: 12pt; }
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+        
+        /* Header avec les belles couleurs bleues */
+        .header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 50px 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            margin: 15px 0 0 0;
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+        
+        .header .author {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 10px 30px;
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            border-radius: 30px;
+        }
+        
+        /* Navigation améliorée */
+        .nav-iterations {
+            background: #2980b9;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-iterations ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+        }
+        
+        .nav-iterations a {
+            display: block;
+            padding: 18px 30px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+            position: relative;
+        }
+        
+        .nav-iterations a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-iterations a.active {
+            background: #3498db;
+            border-bottom-color: #f39c12;
+        }
+        
+        /* Conteneur des itérations */
+        .iteration {
+            padding: 40px 30px;
+            margin: 0;
+            display: none;
+        }
+        
+        .iteration.active {
+            display: block;
+        }
+        
+        .iteration h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+        }
+        
+        /* Couleurs par itération */
+        .iteration1 h2 { color: #2980b9; border-color: #3498db; }
+        .iteration2 h2 { color: #e67e22; border-color: #f39c12; }
+        .iteration3 h2 { color: #8e44ad; border-color: #9b59b6; }
+        .iteration4 h2 { color: #16a085; border-color: #1abc9c; }
+        
+        /* Objectifs */
+        .objectifs {
+            background: #e8f6f3;
+            border-left: 5px solid #16a085;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .objectifs h3 {
+            color: #16a085;
+            margin-top: 0;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        
+        .objectifs ul {
+            margin: 0;
+            padding-left: 25px;
+        }
+        
+        .objectifs li {
+            margin: 8px 0;
+        }
+        
+        .objectifs strong {
+            color: #16a085;
+        }
+        
+        /* Résultat attendu */
+        .resultat-attendu {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 30px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .resultat-attendu h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 1.3rem;
+        }
+        
+        /* Console output */
+        .console-output {
+            color: #2c3e50;
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .user-input {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        /* Progression visuelle */
+        .progression {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .etape-mini {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .etape-mini:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .etape-mini.active {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            font-weight: bold;
+        }
+        
+        /* Étapes */
+        .etape {
+            background: #ffffff;
+            border: 2px solid;
+            border-radius: 12px;
+            margin: 30px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .etape:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .iteration1 .etape { border-color: #3498db; }
+        .iteration2 .etape { border-color: #f39c12; }
+        .iteration3 .etape { border-color: #9b59b6; }
+        .iteration4 .etape { border-color: #1abc9c; }
+        
+        .etape-header {
+            color: white;
+            padding: 20px 25px;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .iteration1 .etape-header { background: #3498db; }
+        .iteration2 .etape-header { background: #f39c12; }
+        .iteration3 .etape-header { background: #9b59b6; }
+        .iteration4 .etape-header { background: #1abc9c; }
+        
+        .etape-content {
+            padding: 25px;
+        }
+        
+        /* Code templates */
+        .code-template {
+            background: #f8f9fa;
+            border: 2px dashed #6c757d;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 20px 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .code-snippet {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+            color: #495057;
+        }
+        
+        .todo {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        /* Conseils */
+        .conseils {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .conseils h4 {
+            color: #856404;
+            margin-top: 0;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Attention */
+        .attention {
+            background: #ffebee;
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .attention h4 {
+            color: #c0392b;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        /* Success */
+        .success {
+            background: #e8f5e8;
+            border-left: 5px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success h3 {
+            color: #27ae60;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        /* Scénarios */
+        .scenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .scenario {
+            background: #ffffff;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .scenario:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .scenario h4 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 10px;
+        }
+        
+        .scenario.valide { border-color: #27ae60; }
+        .scenario.valide h4 { color: #27ae60; }
+        .scenario.invalide { border-color: #e74c3c; }
+        .scenario.invalide h4 { color: #e74c3c; }
+        
+        /* Checklist */
+        .checklist {
+            background: #ffffff;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .checklist h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 18px;
+            color: #3498db;
+        }
+        
+        /* Documentation */
+        .documentation {
+            background: #f0f8ff;
+            border: 2px solid #b3d9ff;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .documentation h3 {
+            color: #2980b9;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        /* Nouveaux styles pour l'itération 2 */
+        .evolution {
+            background: #e8f6f3;
+            border: 2px solid #16a085;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .evolution h3 {
+            color: #148f77;
+            margin-top: 0;
+        }
+        
+        .comparaison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .avant, .apres {
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        
+        .avant {
+            background: #fdf2f2;
+            border-color: #e74c3c;
+        }
+        
+        .apres {
+            background: #eafaf1;
+            border-color: #27ae60;
+        }
+        
+        .avant h4 { color: #c0392b; }
+        .apres h4 { color: #229954; }
+        
+        .concept {
+            background: #ebf3fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .concept h3 {
+            color: #2980b9;
+            margin-top: 0;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        /* Section compilation ajoutée */
+        .compilation-section {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            border: 3px solid #27ae60;
+        }
+        
+        .compilation-section h4 {
+            color: #4ec9b0;
+            margin-top: 0;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #4ec9b0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .command-line {
+            background: #0d0d0d;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .comment { color: #6a9955; }
+        .command { color: #dcdcaa; }
+        .output { color: #ce9178; }
+        .error { color: #f44747; }
+        .success { color: #4ec9b0; }
+        
+        /* Tableau d'erreurs */
+        .error-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .error-table th,
+        .error-table td {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+        
+        .error-table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .error-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .powershell-note {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .powershell-note h5 {
+            color: #1976d2;
+            margin-top: 0;
+        }
+        
+        .workflow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .step {
+            background: #ffffff;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step::after {
+            content: "→";
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #3498db;
+        }
+        
+        .step:last-child::after {
+            display: none;
+        }
+        
+        .demo-boucle {
+            background: #fef9e7;
+            border: 2px solid #f1c40f;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .demo-boucle h4 {
+            color: #b7950b;
+            margin-top: 0;
+        }
+        
+        .normes {
+            background: #f0f8ff;
+            border: 1px solid #87ceeb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .normes h3 {
+            color: #4682b4;
+            margin-top: 0;
+        }
+        
+        .exemple-norme {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .bon, .mauvais {
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+        }
+        
+        .bon {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .mauvais {
+            background: #f8d7da;
+            border: 1px solid #f1aeb5;
+        }
+        
+        /* Nouveaux styles pour l'itération 3 */
+        .structure-projet {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .prototype-vs-definition {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .prototype, .definition {
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        
+        .prototype {
+            background: #e8f4f8;
+            border-color: #3498db;
+        }
+        
+        .definition {
+            background: #f0f9ff;
+            border-color: #2196f3;
+        }
+        
+        .prototype h4 { color: #2980b9; }
+        .definition h4 { color: #1976d2; }
+        
+        .complete {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .reflexion {
+            background: #f0f8ff;
+            border: 1px solid #87ceeb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .reflexion h4 {
+            color: #4682b4;
+            margin-top: 0;
+        }
+        
+        .etapes-module {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .etape-module {
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+        }
+        
+        .etape-module:last-child {
+            border-bottom: none;
+        }
+        
+        .etape-numero {
+            background: #8e44ad;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .fichier-exemple {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .fichier-header {
+            background: #e9ecef;
+            padding: 10px 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: bold;
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .fichier-content {
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .include-guard {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .include-guard h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .compilation-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .compilation-info h4 {
+            color: #0c5460;
+            margin-top: 0;
+        }
+        
+        .warning-vscode {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .warning-vscode h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        /* Nouveau style pour l'avertissement GCC */
+        .gcc-warning {
+            background: #fff3cd;
+            border: 3px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .gcc-warning h4 {
+            color: #e65100;
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        
+        .gcc-fix {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .gcc-fix code {
+            background: #c8e6c9;
+            color: #1b5e20;
+            padding: 3px 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Projet Gestion de Logs C++</h1>
+            <p>BTS CIEL - Guide complet des 4 itérations (Version Corrigée GCC 5.1)</p>
+            <p class="author">👨‍🏫 M. NEGGAOUI</p>
+        </div>
+
+        <nav class="nav-iterations no-print">
+            <ul>
+                <li><a href="#" class="nav-link active" data-iteration="1">Itération 1</a></li>
+                <li><a href="#" class="nav-link" data-iteration="2">Itération 2</a></li>
+                <li><a href="#" class="nav-link" data-iteration="3">Itération 3</a></li>
+                <li><a href="#" class="nav-link" data-iteration="4">Itération 4</a></li>
+            </ul>
+        </nav>
+
+        <!-- ITÉRATION 1 - Version complète -->
+        <div id="iteration1" class="iteration iteration1 active">
+            <h2>Itération 1 - Menu Interactif C++</h2>
+            
+            <div class="objectifs">
+                <h3>📚 Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><strong>Variables</strong> : Déclarer et utiliser une variable entière</li>
+                    <li><strong>Sortie</strong> : Afficher du texte avec <code>cout</code> et <code>endl</code></li>
+                    <li><strong>Entrée</strong> : Lire une saisie utilisateur avec <code>cin</code></li>
+                    <li><strong>Conditions</strong> : Utiliser <code>if</code>, <code>else if</code> et <code>else</code></li>
+                </ul>
+            </div>
+
+            <div class="resultat-attendu">
+                <h3>📋 Résultat attendu de votre programme</h3>
+                <div class="console-output">
+================================<br>
+  CIEL - Gestion de logs<br>
+================================<br>
+Menu principal :<br>
+1 - Voir les evenements systeme<br>
+2 - Voir les connexions reseau<br>
+3 - Voir les actions utilisateur<br>
+0 - Quitter<br>
+<br>
+Votre choix : <span class="user-input">1</span><br>
+Affichage des evenements systeme...
+                </div>
+            </div>
+
+            <div class="progression">
+                <div class="etape-mini active">Étape 0<br>Variables</div>
+                <div class="etape-mini">Étape 1<br>Affichage</div>
+                <div class="etape-mini">Étape 2<br>Saisie</div>
+                <div class="etape-mini">Étape 3<br>Conditions</div>
+                <div class="etape-mini">Étape 4<br>Validation</div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 0 : Préparation - Déclaration des variables</div>
+                <div class="etape-content">
+                    <p><strong>Objectif :</strong> Préparer la structure de base du programme.</p>
+                    
+                    <div class="conseils">
+                        <h4>💡 Ce qu'il faut faire</h4>
+                        <ul>
+                            <li>Inclure les bibliothèques nécessaires</li>
+                            <li>Créer la fonction main()</li>
+                            <li>Déclarer une variable pour stocker le choix de l'utilisateur</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-template">
+#include &lt;iostream&gt;<br>
+#include &lt;string&gt;<br>
+<br>
+using namespace std;<br>
+<br>
+int main() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Déclarer une variable entière nommée "choix"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// Le reste du code viendra ici...</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
+}
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Points d'attention</h4>
+                        <ul>
+                            <li>Quelle est la syntaxe pour déclarer une variable entière en C++ ?</li>
+                            <li>Où placer la déclaration dans le code ?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 1 : Affichage du titre et du menu</div>
+                <div class="etape-content">
+                    <p><strong>Objectif :</strong> Afficher le titre et toutes les options du menu.</p>
+                    
+                    <div class="conseils">
+                        <h4>💡 Fonctions à utiliser</h4>
+                        <ul>
+                            <li><code>cout</code> pour afficher du texte</li>
+                            <li><code>endl</code> pour aller à la ligne</li>
+                            <li>Ou <code>\n</code> dans les chaînes de caractères</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-snippet">
+Exemple : cout &lt;&lt; "Bonjour" &lt;&lt; endl;
+                    </div>
+
+                    <div class="resultat-attendu">
+                        <strong>Résultat à obtenir :</strong>
+                        <div class="console-output">
+================================<br>
+  CIEL - Gestion de logs<br>
+================================<br>
+Menu principal :<br>
+1 - Voir les evenements systeme<br>
+2 - Voir les connexions reseau<br>
+3 - Voir les actions utilisateur<br>
+0 - Quitter
+                        </div>
+                    </div>
+
+                    <div class="attention">
+                        <h4>🎯 Mission</h4>
+                        <p>Écrivez le code pour afficher exactement ce qui est montré ci-dessus. Attention aux espaces et à la mise en forme !</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 2 : Demander le choix à l'utilisateur</div>
+                <div class="etape-content">
+                    <p><strong>Objectif :</strong> Afficher "Votre choix : " et lire la réponse de l'utilisateur.</p>
+                    
+                    <div class="conseils">
+                        <h4>💡 Fonctions à utiliser</h4>
+                        <ul>
+                            <li><code>cout</code> pour afficher "Votre choix : "</li>
+                            <li><code>cin</code> pour lire la valeur saisie</li>
+                            <li>L'opérateur <code>&gt;&gt;</code> pour rediriger vers votre variable</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-snippet">
+Exemple : cin &gt;&gt; maVariable;
+                    </div>
+
+                    <div class="attention">
+                        <h4>🎯 Questions à se poser</h4>
+                        <ul>
+                            <li>Dans quelle variable stocker la réponse ?</li>
+                            <li>Quelle est la syntaxe exacte pour lire avec cin ?</li>
+                            <li>Faut-il un endl après "Votre choix : " ?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 3 : Traitement des choix valides</div>
+                <div class="etape-content">
+                    <p><strong>Objectif :</strong> Utiliser if/else pour réagir aux choix 1, 2, 3 et 0.</p>
+                    
+                    <div class="conseils">
+                        <h4>💡 Structure à utiliser</h4>
+                        <ul>
+                            <li><code>if (condition) { ... }</code></li>
+                            <li><code>else if (condition) { ... }</code></li>
+                            <li>Opérateur de comparaison <code>==</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="scenarios">
+                        <div class="scenario valide">
+                            <h4>✅ Si choix = 1</h4>
+                            <div class="console-output">Affichage des evenements systeme...</div>
+                        </div>
+                        <div class="scenario valide">
+                            <h4>✅ Si choix = 2</h4>
+                            <div class="console-output">Affichage des connexions reseau...</div>
+                        </div>
+                        <div class="scenario valide">
+                            <h4>✅ Si choix = 3</h4>
+                            <div class="console-output">Affichage des actions utilisateur...</div>
+                        </div>
+                        <div class="scenario valide">
+                            <h4>✅ Si choix = 0</h4>
+                            <div class="console-output">Au revoir !</div>
+                        </div>
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Piège fréquent</h4>
+                        <p>Attention : on utilise <code>==</code> pour comparer, pas <code>=</code> !</p>
+                        <div class="code-snippet">
+if (choix == 1) { // ✅ Correct<br>
+if (choix = 1) {  // ❌ Erreur !
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 4 : Gestion des choix invalides</div>
+                <div class="etape-content">
+                    <p><strong>Objectif :</strong> Traiter le cas où l'utilisateur saisit un choix non valide.</p>
+                    
+                    <div class="conseils">
+                        <h4>💡 Structure à compléter</h4>
+                        <p>Ajouter un <code>else</code> final pour capturer tous les autres cas.</p>
+                    </div>
+
+                    <div class="scenario invalide">
+                        <h4>❌ Si choix = 9 (ou autre)</h4>
+                        <div class="console-output">Erreur : choix invalide !</div>
+                    </div>
+
+                    <div class="code-template">
+if (choix == 1) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "..." &lt;&lt; endl;<br>
+} else if (choix == 2) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Compléter</span><br>
+} else if (...) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Autres cas</span><br>
+} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Message d'erreur</span><br>
+}
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOUVELLE SECTION COMPILATION POUR ITÉRATION 1 -->
+            <div class="etape">
+                <div class="etape-header">🔧 Compilation et Exécution</div>
+                <div class="etape-content">
+                    <div class="compilation-section">
+                        <h4>📝 Comment compiler et exécuter votre programme</h4>
+                        
+                        <div class="command-line">
+                            <span class="comment"># Compilation du programme</span><br>
+                            <span class="command">g++ -o gestion_logs.exe main.cpp</span><br>
+                            <br>
+                            <span class="comment"># Exécution dans PowerShell (avec .\)</span><br>
+                            <span class="command">.\gestion_logs.exe</span><br>
+                            <br>
+                            <span class="comment"># OU exécution dans cmd (sans .\)</span><br>
+                            <span class="command">gestion_logs.exe</span>
+                        </div>
+                    </div>
+
+                    <div class="powershell-note">
+                        <h5>💡 Note PowerShell vs CMD</h5>
+                        <ul>
+                            <li><strong>PowerShell :</strong> Utilisez toujours <code>.\gestion_logs.exe</code></li>
+                            <li><strong>CMD :</strong> Utilisez directement <code>gestion_logs.exe</code></li>
+                            <li>Pour passer de PowerShell à CMD, tapez simplement <code>cmd</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <h3>📝 Checklist de validation</h3>
+                <ul>
+                    <li>Le programme compile sans erreur</li>
+                    <li>Le programme s'exécute avec <code>.\gestion_logs.exe</code> dans PowerShell</li>
+                    <li>Le titre s'affiche correctement</li>
+                    <li>Toutes les options du menu sont présentes</li>
+                    <li>La saisie utilisateur fonctionne</li>
+                    <li>Le choix 1 affiche le bon message</li>
+                    <li>Le choix 2 affiche le bon message</li>
+                    <li>Le choix 3 affiche le bon message</li>
+                    <li>Le choix 0 affiche "Au revoir !"</li>
+                    <li>Un choix invalide affiche une erreur</li>
+                    <li>Le code est correctement indenté</li>
+                </ul>
+            </div>
+
+            <div class="documentation">
+                <h3>📖 Documentation du code</h3>
+                <p><strong>N'oubliez pas de documenter votre code :</strong></p>
+                <div class="code-template">
+/**<br>
+ * @file main.cpp<br>
+ * @brief Programme de gestion de logs - Itération 1<br>
+ * @author [Votre nom]<br>
+ * @date [Date du jour]<br>
+ */<br>
+<br>
+/**<br>
+ * @brief Fonction principale du programme<br>
+ * Affiche un menu et traite le choix de l'utilisateur<br>
+ * @return 0 si succès<br>
+ */<br>
+int main() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Déclaration de la variable pour le choix utilisateur<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Affichage du titre et du menu<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// ...<br>
+}
+                </div>
+            </div>
+
+            <div class="success">
+                <h3>🎯 Critères d'évaluation</h3>
+                <ul>
+                    <li><strong>Fonctionnalité (40%)</strong> : Le programme fonctionne correctement pour tous les cas</li>
+                    <li><strong>Syntaxe (20%)</strong> : Code compile, indentation correcte, nommage des variables</li>
+                    <li><strong>Documentation (20%)</strong> : Commentaires pertinents et en-tête de fichier</li>
+                    <li><strong>Créativité (20%)</strong> : Personnalisation des messages, améliorations</li>
+                </ul>
+            </div>
+
+            <div class="attention">
+                <h4>🚀 Pour aller plus loin</h4>
+                <p>Une fois votre programme fonctionnel, essayez ces améliorations :</p>
+                <ul>
+                    <li>Personnaliser le titre avec votre nom</li>
+                    <li>Modifier les messages d'affichage</li>
+                    <li>Ajouter une option 4 avec un message personnalisé</li>
+                    <li>Améliorer la présentation visuelle du menu</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ITÉRATION 2 - Version complète -->
+        <div id="iteration2" class="iteration iteration2">
+            <h2>Itération 2 - Switch et Boucles</h2>
+            
+            <div class="evolution">
+                <h3>🔄 Évolution par rapport à l'itération 1</h3>
+                <p>Votre première itération est fonctionnelle. Nous allons l'améliorer en ajoutant :</p>
+                <ul>
+                    <li><strong>Switch/case</strong> pour remplacer les multiples if/else</li>
+                    <li><strong>Boucles</strong> pour répéter le programme</li>
+                    <li><strong>Meilleur formatage</strong> et documentation</li>
+                </ul>
+            </div>
+            
+            <div class="objectifs">
+                <h3>📚 Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><strong>Switch/case</strong> : Structure de sélection multiple</li>
+                    <li><strong>Boucles</strong> : do-while pour répéter le menu</li>
+                    <li><strong>Break</strong> : Sortir des structures de contrôle</li>
+                    <li><strong>Formatage</strong> : Standards de codage professionnels</li>
+                </ul>
+            </div>
+
+            <div class="resultat-attendu">
+                <h3>📋 Nouveau comportement attendu</h3>
+                <div class="console-output">
+================================<br>
+  CIEL - Gestion de logs<br>
+================================<br>
+Menu principal :<br>
+1 - Voir les evenements systeme<br>
+2 - Voir les connexions reseau<br>
+3 - Voir les actions utilisateur<br>
+0 - Quitter<br>
+<br>
+Votre choix : <span class="user-input">1</span><br>
+Affichage des evenements systeme...<br>
+<br>
+Appuyez sur Entrée...<br>
+<br>
+<span style="color: #666;">// Le menu se réaffiche automatiquement</span><br>
+================================<br>
+  CIEL - Gestion de logs<br>
+================================<br>
+Menu principal :<br>
+...<br>
+Votre choix : <span class="user-input">0</span><br>
+Au revoir !
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 1 : Remplacer if/else par switch/case</div>
+                <div class="etape-content">
+                    <p><strong>Problème identifié :</strong> L'alternative if...else devient très lourde pour traiter l'ensemble des choix de menu.</p>
+                    
+                    <div class="comparaison">
+                        <div class="avant">
+                            <h4>❌ Avant (if/else)</h4>
+                            <div class="code-snippet">
+if (choix == 1) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Option 1";<br>
+} else if (choix == 2) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Option 2";<br>
+} else if (choix == 3) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Option 3";<br>
+} else if (choix == 0) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Quitter";<br>
+} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Erreur";<br>
+}
+                            </div>
+                        </div>
+                        <div class="apres">
+                            <h4>✅ Après (switch/case)</h4>
+                            <div class="code-snippet">
+switch (choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Option 1";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case 2:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Option 2";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Erreur";<br>
+}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="concept">
+                        <h3>📖 Concept : Structure switch/case</h3>
+                        <div class="code-snippet">
+switch (variable) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case valeur1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Instructions pour valeur1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case valeur2:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Instructions pour valeur2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Si aucun case ne correspond<br>
+}
+                        </div>
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Points critiques</h4>
+                        <ul>
+                            <li><strong>break;</strong> : Obligatoire après chaque case (sinon exécution continue)</li>
+                            <li><strong>default:</strong> : Équivalent du else final</li>
+                            <li><strong>Types supportés</strong> : int, char, enum (pas de string)</li>
+                        </ul>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>🎯 Mission</h4>
+                        <p>Transformez votre structure if/else de l'itération 1 en utilisant switch/case. Créez un case pour chaque option de menu (1, 2, 3, 0) et un default pour les erreurs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 2 : Ajouter une boucle de répétition</div>
+                <div class="etape-content">
+                    <p><strong>Objectif :</strong> Le programme doit pouvoir être répété autant que l'utilisateur le souhaite.</p>
+                    
+                    <div class="concept">
+                        <h3>📖 Les 3 types de boucles en C++</h3>
+                        <div class="workflow">
+                            <div class="step">
+                                <strong>for</strong><br>
+                                <small>Nombre connu d'itérations</small>
+                            </div>
+                            <div class="step">
+                                <strong>while</strong><br>
+                                <small>Condition au début</small>
+                            </div>
+                            <div class="step">
+                                <strong>do-while</strong><br>
+                                <small>Condition à la fin</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="demo-boucle">
+                        <h4>💡 Quelle boucle choisir pour un menu ?</h4>
+                        <p><strong>do-while</strong> est idéale car :</p>
+                        <ul>
+                            <li>Le menu doit s'afficher <strong>au moins une fois</strong></li>
+                            <li>On teste la condition <strong>après</strong> avoir traité le choix</li>
+                            <li>On continue <strong>tant que</strong> l'utilisateur ne choisit pas 0</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-snippet">
+<strong>Syntaxe do-while :</strong><br><br>
+do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Instructions à répéter<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// (affichage menu, saisie, traitement)<br>
+} while (condition);
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Déclarer la variable choix</span><br>
+<br>
+do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Afficher le menu</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Lire le choix utilisateur</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Switch/case pour traiter le choix</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Pause pour lire (si choix != 0)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+} while (<span class="todo">/* TODO : Condition pour continuer */</span>);
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Gestion de la pause</h4>
+                        <p>Pour que l'utilisateur puisse lire le résultat avant que le menu se réaffiche :</p>
+                        <div class="code-snippet">
+if (choix != 0) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "\nAppuyez sur Entrée...";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cin.ignore();  // Vide le buffer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cin.get();     // Attend Entrée<br>
+}
+                        </div>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>💭 Questions de réflexion</h4>
+                        <ul>
+                            <li>Quelle doit être la condition dans le while() ?</li>
+                            <li>Où placer le switch/case dans la boucle ?</li>
+                            <li>Comment éviter la pause quand on quitte (choix = 0) ?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOUVELLE SECTION COMPILATION POUR ITÉRATION 2 -->
+            <div class="etape">
+                <div class="etape-header">🔧 Compilation et Exécution</div>
+                <div class="etape-content">
+                    <div class="compilation-section">
+                        <h4>📝 Compilation du programme (toujours un seul fichier)</h4>
+                        
+                        <div class="command-line">
+                            <span class="comment"># Le programme est encore dans un seul fichier</span><br>
+                            <span class="command">g++ -o gestion_logs.exe main.cpp</span><br>
+                            <br>
+                            <span class="comment"># Exécution dans PowerShell</span><br>
+                            <span class="command">.\gestion_logs.exe</span><br>
+                            <br>
+                            <span class="comment"># Ou dans cmd</span><br>
+                            <span class="command">gestion_logs.exe</span>
+                        </div>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>🔄 Test de la boucle</h4>
+                        <p>Vérifiez que :</p>
+                        <ul>
+                            <li>Le menu se réaffiche après chaque choix</li>
+                            <li>La pause fonctionne (sauf pour le choix 0)</li>
+                            <li>Le programme se termine bien avec le choix 0</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 3 : Standards de formatage du code</div>
+                <div class="etape-content">
+                    <div class="normes">
+                        <h3>📝 Règles de formatage C++</h3>
+                        
+                        <h4>1. Indentation</h4>
+                        <div class="exemple-norme">
+                            <div class="bon">
+<strong>✅ Correct (4 espaces)</strong><br>
+if (condition) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Message";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (autre) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Autre";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                            </div>
+                            <div class="mauvais">
+<strong>❌ Incorrect</strong><br>
+if (condition) {<br>
+cout &lt;&lt; "Message";<br>
+if (autre) {<br>
+cout &lt;&lt; "Autre";<br>
+}<br>
+}
+                            </div>
+                        </div>
+
+                        <h4>2. Nommage des variables</h4>
+                        <div class="exemple-norme">
+                            <div class="bon">
+<strong>✅ Correct (camelCase)</strong><br>
+int choixUtilisateur;<br>
+string nomFichier;<br>
+bool estValide;
+                            </div>
+                            <div class="mauvais">
+<strong>❌ Incorrect</strong><br>
+int c;<br>
+string n;<br>
+bool x;
+                            </div>
+                        </div>
+
+                        <h4>3. Espacement</h4>
+                        <div class="exemple-norme">
+                            <div class="bon">
+<strong>✅ Correct</strong><br>
+if (choix == 1) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Message" &lt;&lt; endl;<br>
+}<br>
+<br>
+switch (choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Instructions<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+}
+                            </div>
+                            <div class="mauvais">
+<strong>❌ Incorrect</strong><br>
+if(choix==1){<br>
+cout&lt;&lt;"Message"&lt;&lt;endl;<br>
+}<br>
+switch(choix){<br>
+case 1:<br>
+//Instructions<br>
+break;<br>
+}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>🛠️ Vérification automatique</h4>
+                        <p>Dans VS Code, vous pouvez :</p>
+                        <ul>
+                            <li>Utiliser <strong>Shift+Alt+F</strong> pour formater automatiquement</li>
+                            <li>Activer le formatage à la sauvegarde</li>
+                            <li>Installer l'extension "Bracket Pair Colorizer"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 4 : Documentation du code</div>
+                <div class="etape-content">
+                    <div class="concept">
+                        <h3>📝 Documentation complète requise</h3>
+                        
+                        <h4>1. En-tête de fichier</h4>
+                        <div class="code-template">
+/**<br>
+ * @file main.cpp<br>
+ * @brief Programme de gestion de logs - Itération 2<br>
+ * @details Affiche un menu répétitif avec switch/case<br>
+ * @author [Votre Nom]<br>
+ * @date [Date du jour]<br>
+ * @version 2.0<br>
+ */
+                        </div>
+
+                        <h4>2. Documentation de la fonction main</h4>
+                        <div class="code-template">
+/**<br>
+ * @brief Fonction principale du programme<br>
+ * @details Affiche un menu en boucle jusqu'à ce que<br>
+ *          l'utilisateur choisisse de quitter (choix = 0)<br>
+ * @return 0 si le programme se termine normalement<br>
+ */<br>
+int main() {
+                        </div>
+
+                        <h4>3. Commentaires dans le code</h4>
+                        <div class="code-template">
+do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Affichage du menu principal<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Menu..." &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Lecture du choix utilisateur<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Traitement selon le choix<br>
+&nbsp;&nbsp;&nbsp;&nbsp;switch (choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Cas particulier pour la sortie<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Au revoir !" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+} while (choix != 0);  // Répéter tant que pas de sortie
+                        </div>
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Points de fonctionnement délicat à expliquer</h4>
+                        <ul>
+                            <li><strong>cin.ignore() et cin.get()</strong> : Pourquoi cette combinaison ?</li>
+                            <li><strong>do-while vs while</strong> : Justifier le choix</li>
+                            <li><strong>break dans switch</strong> : Que se passe-t-il sans ?</li>
+                            <li><strong>Condition de boucle</strong> : Logique de continuation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <h3>📝 Checklist de validation Itération 2</h3>
+                <ul>
+                    <li>Le programme utilise switch/case au lieu de if/else</li>
+                    <li>Tous les case ont un break (sauf cas particuliers)</li>
+                    <li>Un default gère les choix invalides</li>
+                    <li>Une boucle do-while répète le menu</li>
+                    <li>La condition de sortie (choix != 0) fonctionne</li>
+                    <li>Une pause permet de lire avant réaffichage</li>
+                    <li>Le programme s'exécute avec <code>.\gestion_logs.exe</code> dans PowerShell</li>
+                    <li>Le code est correctement indenté (4 espaces)</li>
+                    <li>Les variables ont des noms explicites</li>
+                    <li>L'en-tête de fichier est documenté</li>
+                    <li>La fonction main() est documentée</li>
+                    <li>Les points délicats sont commentés</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <h3>🎯 Résultats attendus finaux</h3>
+                <ul>
+                    <li><strong>✅</strong> Les différents choix du menu sont sélectionnés avec switch/case</li>
+                    <li><strong>✅</strong> Le programme se répète jusqu'à ce que l'utilisateur choisisse 0</li>
+                    <li><strong>✅</strong> Le code est correctement indenté et formaté</li>
+                    <li><strong>✅</strong> Les noms de variables respectent les conventions</li>
+                    <li><strong>✅</strong> Le fichier main.cpp est correctement documenté</li>
+                    <li><strong>✅</strong> La fonction main() est correctement documentée</li>
+                    <li><strong>✅</strong> Les points de fonctionnement délicat sont explicités</li>
+                </ul>
+            </div>
+
+            <div class="attention">
+                <h4>🚀 Améliorations pour aller plus loin</h4>
+                <ul>
+                    <li>Ajouter un compteur du nombre d'actions effectuées</li>
+                    <li>Afficher l'heure à chaque affichage du menu</li>
+                    <li>Personnaliser les messages pour chaque option</li>
+                    <li>Ajouter une option "Aide" avec les instructions</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ITÉRATION 3 - Version CORRIGÉE -->
+        <div id="iteration3" class="iteration iteration3">
+            <h2>Itération 3 - Fonctions et Modules</h2>
+            
+            <div class="evolution">
+                <h3>🔄 Évolution du projet</h3>
+                <p>Notre programme commence à être plus complexe et nécessite de regrouper les fonctionnalités dans des modules dédiés.</p>
+                <ul>
+                    <li><strong>Problème actuel :</strong> Tout le code est dans main() - difficile à maintenir</li>
+                    <li><strong>Solution :</strong> Découper en fonctions spécialisées</li>
+                    <li><strong>Amélioration :</strong> Organiser en modules séparés (.h/.cpp)</li>
+                </ul>
+            </div>
+            
+            <div class="objectifs">
+                <h3>📚 Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><strong>Fonctions</strong> : Création de sous-fonctions avec prototypes</li>
+                    <li><strong>Refactorisation</strong> : Réorganiser le code existant</li>
+                    <li><strong>Modules</strong> : Séparation .h/.cpp</li>
+                    <li><strong>Include</strong> : Utilisation de fichiers d'en-tête</li>
+                    <li><strong>Compilation multi-fichiers</strong> : Compiler plusieurs .cpp ensemble</li>
+                </ul>
+            </div>
+
+            <div class="structure-projet">
+                <strong>📁 Structure finale attendue :</strong><br>
+GestionLog/<br>
+├── main.cpp<br>
+├── Menu/<br>
+│   ├── menu.h<br>
+│   └── menu.cpp<br>
+└── logs_test/<br>
+    ├── windows_events.txt<br>
+    ├── network_logs.txt<br>
+    └── user_actions.txt
+            </div>
+
+            <div class="comparaison">
+                <div class="avant">
+                    <h4>❌ Avant (Itération 2)</h4>
+                    <div class="code-snippet">
+int main() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 30 lignes d'affichage menu<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch (choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 20 lignes de traitement<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} while (choix != 0);<br>
+}
+                    </div>
+                </div>
+                <div class="apres">
+                    <h4>✅ Après (Itération 3)</h4>
+                    <div class="code-snippet">
+int main() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;afficherMenu();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;choisirLog(choix);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} while (choix != 0);<br>
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 1 : Sous-fonction afficherMenu()</div>
+                <div class="etape-content">
+                    <div class="concept">
+                        <h3>📖 Concept : Fonctions sans paramètre ni retour</h3>
+                        <div class="prototype-vs-definition">
+                            <div class="prototype">
+                                <h4>Prototype (Déclaration)</h4>
+                                <div class="code-snippet">
+void afficherMenu();
+                                </div>
+                                <p><small>Indique ce que fait la fonction</small></p>
+                            </div>
+                            <div class="definition">
+                                <h4>Définition (Implémentation)</h4>
+                                <div class="code-snippet">
+void afficherMenu() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Code ici<br>
+}
+                                </div>
+                                <p><small>Contient le code à exécuter</small></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>🎯 Mission</h4>
+                        <p>Extraire tout le code d'affichage du menu de votre main() et le placer dans une fonction séparée.</p>
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Ajouter le prototype avant main()</span><br>
+void afficherMenu();<br>
+<br>
+int main() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Appeler la fonction au lieu du code d'affichage</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;afficherMenu();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// switch/case reste ici pour l'instant<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} while (choix != 0);<br>
+}<br>
+<br>
+<span class="todo">// TODO : Définir la fonction après main()</span><br>
+void afficherMenu() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Déplacer ici tout le code cout du menu</span><br>
+}
+                    </div>
+
+                    <div class="reflexion">
+                        <h4>💭 Questions de réflexion</h4>
+                        <ul>
+                            <li>Pourquoi utiliser <code>void</code> comme type de retour ?</li>
+                            <li>Où placer le prototype dans le fichier ?</li>
+                            <li>Comment tester que la fonction fonctionne ?</li>
+                        </ul>
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Points critiques</h4>
+                        <ul>
+                            <li><strong>Prototype obligatoire</strong> : Doit être déclaré avant main()</li>
+                            <li><strong>Même signature</strong> : Prototype et définition identiques</li>
+                            <li><strong>Portée des variables</strong> : La variable 'choix' reste dans main()</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 2 : Sous-fonction choisirLog()</div>
+                <div class="etape-content">
+                    <div class="concept">
+                        <h3>📖 Concept : Fonction avec paramètre</h3>
+                        <p>Cette fonction doit recevoir le choix de l'utilisateur pour traiter l'affichage correspondant.</p>
+                        <div class="code-snippet">
+<strong>Prototype :</strong><br>
+void choisirLog(int choix);<br>
+<br>
+<strong>Définition :</strong><br>
+void choisirLog(int choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;switch (choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Cases ici<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                        </div>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>🎯 Mission</h4>
+                        <p>Extraire tout le switch/case de votre main() et le placer dans cette nouvelle fonction.</p>
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Ajouter le prototype</span><br>
+void choisirLog(int choix);<br>
+<br>
+int main() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;afficherMenu();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Appeler la fonction avec le paramètre</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;choisirLog(choix);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (choix != 0) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Pause reste dans main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} while (choix != 0);<br>
+}<br>
+<br>
+<span class="todo">// TODO : Définir la fonction</span><br>
+void choisirLog(int choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Déplacer ici tout le switch/case</span><br>
+}
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Transmission de paramètres</h4>
+                        <p>Le paramètre <code>choix</code> de la fonction est une <strong>copie</strong> de la variable du main(). Les modifications dans la fonction n'affectent pas la variable originale.</p>
+                    </div>
+
+                    <div class="reflexion">
+                        <h4>💭 Questions de réflexion</h4>
+                        <ul>
+                            <li>Pourquoi passer 'choix' en paramètre plutôt qu'une variable globale ?</li>
+                            <li>Que se passe-t-il si on modifie 'choix' dans la fonction ?</li>
+                            <li>Où doit rester la gestion de la pause (cin.ignore/cin.get) ?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 3 : Création du module Menu</div>
+                <div class="etape-content">
+                    <div class="concept">
+                        <h3>📖 Concept : Modules en C++</h3>
+                        <p>Un module est composé de :</p>
+                        <ul>
+                            <li><strong>Fichier .h</strong> : Contient les déclarations (prototypes)</li>
+                            <li><strong>Fichier .cpp</strong> : Contient les définitions (implémentations)</li>
+                        </ul>
+                    </div>
+
+                    <div class="etapes-module">
+                        <div class="etape-module">
+                            <div class="etape-numero">1</div>
+                            <div>
+                                <strong>Créer le dossier Menu</strong><br>
+                                <small>Clic droit dans l'explorateur VS Code → Nouveau dossier</small>
+                            </div>
+                        </div>
+                        <div class="etape-module">
+                            <div class="etape-numero">2</div>
+                            <div>
+                                <strong>Créer menu.h</strong><br>
+                                <small>Dans le dossier Menu → Nouveau fichier → menu.h</small>
+                            </div>
+                        </div>
+                        <div class="etape-module">
+                            <div class="etape-numero">3</div>
+                            <div>
+                                <strong>Créer menu.cpp</strong><br>
+                                <small>Dans le dossier Menu → Nouveau fichier → menu.cpp</small>
+                            </div>
+                        </div>
+                        <div class="etape-module">
+                            <div class="etape-numero">4</div>
+                            <div>
+                                <strong>Déplacer les fonctions</strong><br>
+                                <small>Couper/coller les définitions vers menu.cpp</small>
+                            </div>
+                        </div>
+                        <div class="etape-module">
+                            <div class="etape-numero">5</div>
+                            <div>
+                                <strong>Créer les prototypes</strong><br>
+                                <small>Ajouter les déclarations dans menu.h</small>
+                            </div>
+                        </div>
+                        <div class="etape-module">
+                            <div class="etape-numero">6</div>
+                            <div>
+                                <strong>Inclure le module</strong><br>
+                                <small>Ajouter #include "Menu/menu.h" dans main.cpp</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 Menu/menu.h</div>
+                        <div class="fichier-content">
+<span class="todo">// TODO : Ajouter les include guards</span><br>
+#ifndef MENU_H<br>
+#define MENU_H<br>
+<br>
+<span class="todo">// TODO : Inclure les bibliothèques nécessaires</span><br>
+#include &lt;iostream&gt;<br>
+<br>
+<span class="todo">// TODO : Déclarer les prototypes</span><br>
+void afficherMenu();<br>
+void choisirLog(int choix);<br>
+<br>
+#endif // MENU_H
+                        </div>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 Menu/menu.cpp</div>
+                        <div class="fichier-content">
+<span class="todo">// TODO : Inclure le fichier d'en-tête</span><br>
+#include "menu.h"<br>
+#include &lt;cstdlib&gt;<br>
+<br>
+using namespace std;<br>
+<br>
+<span class="todo">// TODO : Déplacer la définition d'afficherMenu()</span><br>
+void afficherMenu() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// Votre code d'affichage ici</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;system("cls");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "================================" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// etc...<br>
+}<br>
+<br>
+<span class="todo">// TODO : Déplacer la définition de choisirLog()</span><br>
+void choisirLog(int choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// Votre switch/case ici</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;switch(choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// vos cases...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                        </div>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 main.cpp (modifié)</div>
+                        <div class="fichier-content">
+#include &lt;iostream&gt;<br>
+#include &lt;cstdlib&gt;<br>
+<span class="complete">// Inclusion du module Menu</span><br>
+#include "Menu/menu.h"<br>
+<br>
+using namespace std;<br>
+<br>
+int main() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;do {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="complete">// Appel des fonctions du module</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;afficherMenu();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; choix;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;choisirLog(choix);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (choix != 0) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "\nAppuyez sur Entrée...";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin.ignore();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin.get();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} while (choix != 0);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
+}
+                        </div>
+                    </div>
+
+                    <div class="include-guard">
+                        <h4>🛡️ Include Guards - Protection contre l'inclusion multiple</h4>
+                        <p>Les directives <code>#ifndef</code>, <code>#define</code>, <code>#endif</code> empêchent l'inclusion multiple du même fichier .h, ce qui provoquerait des erreurs de compilation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION COMPILATION CRITIQUE POUR ITÉRATION 3 -->
+            <div class="etape">
+                <div class="etape-header">🔧 COMPILATION MULTI-FICHIERS (TRÈS IMPORTANT)</div>
+                <div class="etape-content">
+                    <div class="attention">
+                        <h4>⚠️ ATTENTION : La compilation change complètement !</h4>
+                        <p>Maintenant que vous avez <strong>plusieurs fichiers .cpp</strong>, vous DEVEZ tous les compiler ensemble !</p>
+                    </div>
+
+                    <div class="compilation-section">
+                        <h4>📝 Nouvelle commande de compilation</h4>
+                        
+                        <div class="command-line">
+                            <span class="comment"># IMPORTANT : Compiler TOUS les fichiers .cpp</span><br>
+                            <span class="command">g++ -o gestion_logs.exe main.cpp Menu/menu.cpp</span><br>
+                            <br>
+                            <span class="comment"># Puis exécuter dans PowerShell</span><br>
+                            <span class="command">.\gestion_logs.exe</span><br>
+                            <br>
+                            <span class="comment"># Ou dans cmd</span><br>
+                            <span class="command">gestion_logs.exe</span>
+                        </div>
+                    </div>
+
+                    <table class="error-table">
+                        <thead>
+                            <tr>
+                                <th>❌ Erreur fréquente</th>
+                                <th>✅ Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>undefined reference to `afficherMenu()'</code></td>
+                                <td>Vous n'avez pas compilé Menu/menu.cpp ! Utilisez :<br>
+                                    <code>g++ -o gestion_logs.exe main.cpp Menu/menu.cpp</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>undefined reference to `choisirLog(int)'</code></td>
+                                <td>Même problème : compilez les DEUX fichiers .cpp</td>
+                            </tr>
+                            <tr>
+                                <td><code>gestion_logs.exe n'est pas reconnu</code></td>
+                                <td>Dans PowerShell, utilisez <code>.\gestion_logs.exe</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>menu.h: No such file or directory</code></td>
+                                <td>Vérifiez le chemin : <code>#include "Menu/menu.h"</code> avec M majuscule</td>
+                            </tr>
+                            <tr>
+                                <td><code>redefinition of 'afficherMenu'</code></td>
+                                <td>Vérifiez les include guards dans menu.h</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="powershell-note">
+                        <h5>💡 Rappel PowerShell vs CMD</h5>
+                        <ul>
+                            <li><strong>PowerShell :</strong> Toujours <code>.\gestion_logs.exe</code> (avec le point et l'antislash)</li>
+                            <li><strong>CMD :</strong> Directement <code>gestion_logs.exe</code></li>
+                            <li>Si vous avez des doutes, tapez <code>cmd</code> dans PowerShell pour passer en mode CMD</li>
+                        </ul>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>🎯 Méthode de vérification</h4>
+                        <ol>
+                            <li>Compilez avec : <code>g++ -o gestion_logs.exe main.cpp Menu/menu.cpp</code></li>
+                            <li>Si erreur → Vérifiez que Menu/menu.cpp existe</li>
+                            <li>Si compilation OK → Exécutez avec <code>.\gestion_logs.exe</code></li>
+                            <li>Testez toutes les options du menu</li>
+                        </ol>
+                    </div>
+
+                    <div class="attention">
+                        <h4>❗ Erreur la plus fréquente</h4>
+                        <p>Si vous tapez seulement :</p>
+                        <div class="code-snippet">
+g++ -o gestion_logs.exe main.cpp  <span class="error">← INCOMPLET !</span>
+                        </div>
+                        <p>Vous aurez l'erreur <code>undefined reference</code> car les fonctions sont dans Menu/menu.cpp !</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 4 : Documentation des fonctions</div>
+                <div class="etape-content">
+                    <div class="concept">
+                        <h3>📝 Documentation des fonctions</h3>
+                        <p>Chaque fonction doit être documentée avec sa responsabilité et ses paramètres.</p>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 Documentation dans menu.h</div>
+                        <div class="fichier-content">
+/**<br>
+ * @file menu.h<br>
+ * @brief Module de gestion du menu principal<br>
+ * @author [Votre nom]<br>
+ * @date [Date]<br>
+ */<br>
+<br>
+/**<br>
+ * @brief Affiche le menu principal du programme<br>
+ * @details Affiche le titre et toutes les options disponibles<br>
+ */<br>
+void afficherMenu();<br>
+<br>
+/**<br>
+ * @brief Traite le choix de l'utilisateur<br>
+ * @param choix Numéro de l'option sélectionnée (0-3)<br>
+ * @details Utilise un switch/case pour afficher les logs correspondants<br>
+ */<br>
+void choisirLog(int choix);
+                        </div>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 Documentation dans menu.cpp</div>
+                        <div class="fichier-content">
+/**<br>
+ * @file menu.cpp<br>
+ * @brief Implémentation du module de gestion du menu<br>
+ */<br>
+<br>
+void afficherMenu() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Affichage du titre centré<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "================================" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// ... reste du code<br>
+}<br>
+<br>
+void choisirLog(int choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Traitement selon la valeur du paramètre<br>
+&nbsp;&nbsp;&nbsp;&nbsp;switch (choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Affichage des événements système<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Affichage des evenements systeme..." &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// ... autres cases<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <h3>📝 Checklist de validation Itération 3</h3>
+                <ul>
+                    <li>La fonction afficherMenu() est créée avec le bon prototype</li>
+                    <li>La fonction choisirLog() est créée avec paramètre int</li>
+                    <li>Le main() appelle ces fonctions au lieu du code direct</li>
+                    <li>Le dossier Menu/ est créé</li>
+                    <li>Le fichier menu.h contient les prototypes</li>
+                    <li>Le fichier menu.cpp contient les définitions</li>
+                    <li>Les include guards sont présents dans menu.h</li>
+                    <li>Le main.cpp inclut "Menu/menu.h"</li>
+                    <li><strong>Le programme compile avec : g++ -o gestion_logs.exe main.cpp Menu/menu.cpp</strong></li>
+                    <li><strong>Le programme s'exécute avec .\gestion_logs.exe dans PowerShell</strong></li>
+                    <li>Le comportement est identique à l'itération 2</li>
+                    <li>Toutes les fonctions sont documentées</li>
+                    <li>Le code respecte les standards de formatage</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <h3>🎯 Résultats attendus</h3>
+                <ul>
+                    <li><strong>✅</strong> La fonction afficherMenu() est créée en respectant le prototype proposé</li>
+                    <li><strong>✅</strong> Les choix possibles sont affichés via la sous-fonction afficherMenu()</li>
+                    <li><strong>✅</strong> La fonction choisirLog() est créée en respectant le prototype proposé</li>
+                    <li><strong>✅</strong> Les logs sont correctement affichés grâce à choisirLog()</li>
+                    <li><strong>✅</strong> Le module Menu est créé avec les fichiers .h et .cpp</li>
+                    <li><strong>✅</strong> La compilation multi-fichiers fonctionne</li>
+                    <li><strong>✅</strong> Le code est correctement indenté et documenté</li>
+                </ul>
+            </div>
+
+            <div class="compilation-info">
+                <h4>🔧 Test de compilation final</h4>
+                <p>Pour vérifier que votre organisation en modules fonctionne :</p>
+                <ol>
+                    <li>Tapez : <code>g++ -o gestion_logs.exe main.cpp Menu/menu.cpp</code></li>
+                    <li>Vérifiez qu'il n'y a pas d'erreurs de compilation</li>
+                    <li>Exécutez : <code>.\gestion_logs.exe</code> (dans PowerShell)</li>
+                    <li>Testez chaque option du menu</li>
+                    <li>Confirmez que le comportement est identique à l'itération 2</li>
+                </ol>
+            </div>
+
+            <div class="attention">
+                <h4>🚀 Avantages de cette approche modulaire</h4>
+                <ul>
+                    <li><strong>Lisibilité</strong> : Le main() est maintenant très clair</li>
+                    <li><strong>Réutilisabilité</strong> : Les fonctions peuvent être utilisées ailleurs</li>
+                    <li><strong>Maintenance</strong> : Modifications isolées dans chaque module</li>
+                    <li><strong>Collaboration</strong> : Plusieurs développeurs peuvent travailler en parallèle</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ITÉRATION 4 - Version complète AVEC FIX GCC 5.1 -->
+        <div id="iteration4" class="iteration iteration4">
+            <h2>Itération 4 - Manipulation de Fichiers</h2>
+            
+            <!-- AVERTISSEMENT GCC 5.1 -->
+            <div class="gcc-warning">
+                <h4>⚠️ IMPORTANT : Compatibilité GCC 5.1</h4>
+                <p><strong>Si vous utilisez GCC 5.1.0 (TDM-GCC) ou une version ancienne :</strong></p>
+                <ul>
+                    <li>Vous devez ajouter <code>.c_str()</code> après chaque <code>string</code> utilisé avec <code>ifstream</code></li>
+                    <li>Exemple : <code>ifstream fichier(nomFichier.c_str());</code></li>
+                    <li>Les exemples ci-dessous incluent cette correction</li>
+                </ul>
+                <p><strong>Si vous avez une version récente de GCC (7+) :</strong> Vous pouvez ignorer <code>.c_str()</code></p>
+            </div>
+            
+            <div class="evolution">
+                <h3>🔄 Évolution vers les données réelles</h3>
+                <p>Jusqu'à présent, nous affichions seulement des messages simples comme "Affichage des evenements systeme...". Il est temps de lire de VRAIS fichiers de logs avec de vraies données !</p>
+                <ul>
+                    <li><strong>Limitation actuelle :</strong> Simple message de confirmation, aucune donnée réelle affichée</li>
+                    <li><strong>Solution :</strong> Lecture de fichiers .txt contenant de vrais logs</li>
+                    <li><strong>Amélioration :</strong> Génération automatique de rapports de synthèse</li>
+                </ul>
+            </div>
+            
+            <div class="objectifs">
+                <h3>📚 Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><strong>ifstream</strong> : Flux d'entrée pour lire des fichiers</li>
+                    <li><strong>ofstream</strong> : Flux de sortie pour écrire des fichiers</li>
+                    <li><strong>getline()</strong> : Lecture ligne par ligne</li>
+                    <li><strong>Gestion d'erreurs</strong> : Vérification d'ouverture de fichiers</li>
+                    <li><strong>Rapports</strong> : Synthèse et sauvegarde de données</li>
+                </ul>
+            </div>
+
+            <div class="structure-projet">
+                <strong>📁 Structure de fichiers requise :</strong><br>
+GestionLog/<br>
+├── main.cpp<br>
+├── Menu/<br>
+│   ├── menu.h<br>
+│   └── menu.cpp<br>
+└── logs_test/                    ← Nouveau dossier<br>
+    ├── windows_events.txt        ← Fichiers de logs<br>
+    ├── network_logs.txt<br>
+    ├── user_actions.txt<br>
+    └── rapport_synthese.txt      ← Généré par le programme
+            </div>
+
+            <div class="concept">
+                <h3>📖 Concept : Flux de fichiers en C++</h3>
+                <div class="comparaison">
+                    <div class="avant">
+                        <h4>📖 Lecture (ifstream)</h4>
+                        <div class="code-snippet">
+#include &lt;fstream&gt;<br><br>
+<span style="color: #ff9800;">// Pour GCC 5.1 : ajouter .c_str()</span><br>
+ifstream fichier(nom.c_str());<br>
+<span style="color: #888;">// OU pour GCC récent :</span><br>
+<span style="color: #888;">// ifstream fichier(nom);</span><br><br>
+if (fichier.is_open()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string ligne;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while (getline(fichier, ligne)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; ligne &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fichier.close();<br>
+}
+                        </div>
+                    </div>
+                    <div class="apres">
+                        <h4>✍️ Écriture (ofstream)</h4>
+                        <div class="code-snippet">
+#include &lt;fstream&gt;<br><br>
+ofstream fichier("rapport.txt");<br>
+if (fichier.is_open()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fichier &lt;&lt; "Ligne 1" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fichier &lt;&lt; "Ligne 2" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fichier.close();<br>
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Préparation : Création des fichiers de logs de test</div>
+                <div class="etape-content">
+                    <div class="conseils">
+                        <h4>📋 Mission préliminaire</h4>
+                        <p>Créez le dossier <code>logs_test/</code> et les trois fichiers suivants dans votre projet :</p>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 logs_test/windows_events.txt</div>
+                        <div class="fichier-content">2024-03-15 08:30:00 SYSTEM Demarrage de Windows 11<br>
+2024-03-15 08:30:15 SERVICE Windows Defender demarre<br>
+2024-03-15 08:30:45 USER Connexion utilisateur Student<br>
+2024-03-15 09:15:30 UPDATE Installation KB5034439 terminee<br>
+2024-03-15 10:22:18 ANTIVIRUS Analyse complete : 0 menace<br>
+2024-03-15 11:45:22 ERROR Erreur disque dur detectee<br>
+2024-03-15 14:30:55 USER Deconnexion utilisateur Student</div>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 logs_test/network_logs.txt</div>
+                        <div class="fichier-content">2024-03-15 08:31:12 WIFI Connexion etablie : Reseau-BTS-CIEL<br>
+2024-03-15 08:32:45 HTTP Navigation : google.com<br>
+2024-03-15 09:20:33 HTTPS Navigation securisee : github.com<br>
+2024-03-15 10:15:48 FTP Tentative de connexion FTP bloquee<br>
+2024-03-15 11:30:22 RDP Connexion Bureau a distance vers 192.168.1.100<br>
+2024-03-15 13:45:19 DNS Requete DNS : stackoverflow.com<br>
+2024-03-15 15:22:41 WIFI Deconnexion du reseau</div>
+                    </div>
+
+                    <div class="fichier-exemple">
+                        <div class="fichier-header">📄 logs_test/user_actions.txt</div>
+                        <div class="fichier-content">2024-03-15 08:45:30 OPEN Ouverture application : Visual Studio Code<br>
+2024-03-15 09:12:15 FILE Creation fichier : main.cpp<br>
+2024-03-15 10:30:22 COMPILE Compilation reussie du projet C++<br>
+2024-03-15 11:15:45 UAC Demande elevation privileges pour installation<br>
+2024-03-15 12:00:10 SAVE Sauvegarde projet sur lecteur externe<br>
+2024-03-15 14:22:33 PRINT Impression document : rapport_stage.pdf<br>
+2024-03-15 16:45:18 CLOSE Fermeture de toutes les applications</div>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>📝 Instructions de création</h4>
+                        <ol>
+                            <li>Créez le dossier <code>logs_test</code> dans votre projet</li>
+                            <li>Créez chaque fichier .txt et copiez le contenu exactement</li>
+                            <li>Vérifiez que les chemins sont corrects depuis votre main.cpp</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 1 : Fonction de lecture de fichier logs</div>
+                <div class="etape-content">
+                    <div class="concept">
+                        <h3>Objectif : Remplacer les messages statiques par la lecture de vrais fichiers</h3>
+                        <p>Modifier vos fonctions du module Menu pour lire les fichiers correspondants au lieu d'afficher des messages fixes.</p>
+                    </div>
+
+                    <!-- AVERTISSEMENT FIX GCC -->
+                    <div class="gcc-fix">
+                        <h4>🔧 Correction pour GCC 5.1</h4>
+                        <p>Si vous avez l'erreur <strong>"no matching function for call to ifstream"</strong>, utilisez :</p>
+                        <code>ifstream fichier(nomFichier.c_str());</code>
+                        <p>au lieu de :</p>
+                        <code style="text-decoration: line-through;">ifstream fichier(nomFichier);</code>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>📋 Processus de lecture d'un fichier</h4>
+                        <ol>
+                            <li><strong>Inclure</strong> la bibliothèque &lt;fstream&gt;</li>
+                            <li><strong>Déclarer</strong> un objet ifstream</li>
+                            <li><strong>Ouvrir</strong> le fichier avec le bon chemin (et .c_str() pour GCC 5.1)</li>
+                            <li><strong>Vérifier</strong> que l'ouverture a réussi</li>
+                            <li><strong>Lire</strong> le contenu ligne par ligne</li>
+                            <li><strong>Fermer</strong> le fichier</li>
+                        </ol>
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Ajouter #include &lt;fstream&gt; et &lt;string&gt; dans menu.h</span><br><br>
+<span class="todo">// TODO : Modifier la fonction choisirLog() dans menu.cpp</span><br>
+void choisirLog(int choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;switch (choix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Appeler une fonction pour lire windows_events.txt</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lireFichierLogs("logs_test/windows_events.txt", "EVENEMENTS SYSTEME");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 2:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Appeler une fonction pour lire network_logs.txt</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lireFichierLogs("logs_test/network_logs.txt", "CONNEXIONS RESEAU");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 3:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Appeler une fonction pour lire user_actions.txt</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lireFichierLogs("logs_test/user_actions.txt", "ACTIONS UTILISATEUR");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Au revoir !" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Erreur : choix invalide !" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                    </div>
+
+                    <div class="conseils">
+                        <h4>📋 Fonction à créer : lireFichierLogs()</h4>
+                        <p>Créez une nouvelle fonction qui prend en paramètres :</p>
+                        <ul>
+                            <li><strong>nomFichier</strong> : Le chemin vers le fichier à lire</li>
+                            <li><strong>titre</strong> : Le titre à afficher avant les logs</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Ajouter le prototype dans menu.h</span><br>
+void lireFichierLogs(std::string nomFichier, std::string titre);<br><br>
+<span class="todo">// TODO : Implémenter dans menu.cpp</span><br>
+void lireFichierLogs(string nomFichier, string titre) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "\n=== " &lt;&lt; titre &lt;&lt; " ===" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Déclarer un objet ifstream</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="background: #ffeb3b; padding: 2px 5px; font-weight: bold;">// IMPORTANT : Pour GCC 5.1, ajouter .c_str()</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;ifstream fichier(nomFichier<span style="background: #4caf50; color: white; padding: 2px 5px; font-weight: bold;">.c_str()</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Vérifier que le fichier s'ouvre correctement</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (fichier.is_open()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Déclarer une variable string pour chaque ligne</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string ligne;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int compteur = 0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Boucle pour lire ligne par ligne</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (getline(fichier, ligne)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Afficher chaque ligne</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; ligne &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;compteur++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Fermer le fichier</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fichier.close();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Afficher le nombre total de lignes lues</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "\nTotal : " &lt;&lt; compteur &lt;&lt; " evenements lus" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Message d'erreur si fichier non trouvé</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Erreur : Impossible d'ouvrir le fichier " &lt;&lt; nomFichier &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Gestion des erreurs de fichiers</h4>
+                        <p><strong>Erreurs possibles :</strong></p>
+                        <ul>
+                            <li>Fichier inexistant ou chemin incorrect</li>
+                            <li>Permissions insuffisantes</li>
+                            <li>Fichier déjà ouvert par une autre application</li>
+                            <li>Disque plein ou problème matériel</li>
+                        </ul>
+                        <p><strong>Méthode de vérification :</strong> <code>fichier.is_open()</code></p>
+                    </div>
+
+                    <div class="reflexion">
+                        <h4>💭 Questions de réflexion</h4>
+                        <ul>
+                            <li>Pourquoi utiliser <code>getline()</code> plutôt que <code>&gt;&gt;</code> ?</li>
+                            <li>Que se passe-t-il si on oublie <code>fichier.close()</code> ?</li>
+                            <li>Comment adapter le chemin si on change la structure des dossiers ?</li>
+                            <li>Pourquoi passer le titre en paramètre plutôt que l'écrire en dur ?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="etape">
+                <div class="etape-header">Étape 2 : Génération de rapports automatisés</div>
+                <div class="etape-content">
+                    <div class="concept">
+                        <h3>Objectif : Créer un rapport de synthèse dans un fichier</h3>
+                        <p>Ajouter une option au menu pour générer un rapport qui analyse tous les fichiers de logs et crée un fichier de synthèse.</p>
+                    </div>
+
+                    <div class="conseils">
+                        <h4>📋 Nouvelle option menu : 4 - Générer rapport de synthèse</h4>
+                        <p>Cette option doit :</p>
+                        <ul>
+                            <li>Analyser tous les fichiers de logs</li>
+                            <li>Compter les événements par type</li>
+                            <li>Sauvegarder le résultat dans <code>logs_test/rapport_synthese.txt</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Modifier afficherMenu() pour ajouter l'option 4</span><br>
+void afficherMenu() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// ... menu existant ...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "4 - Generer rapport de synthese" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "0 - Quitter" &lt;&lt; endl;<br>
+}<br><br>
+<span class="todo">// TODO : Ajouter le case 4 dans choisirLog()</span><br>
+case 4:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;genererRapport();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;break;
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Créer la fonction genererRapport()</span><br>
+void genererRapport() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "\n=== GENERATION DU RAPPORT ===" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Déclarer un ofstream pour écrire le rapport</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;ofstream rapport("logs_test/rapport_synthese.txt");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (rapport.is_open()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Écrire l'en-tête du rapport</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; "==========================================" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; "RAPPORT DE SYNTHESE DES LOGS - BTS CIEL" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; "Date de generation : " &lt;&lt; __DATE__ &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; "==========================================" &lt;&lt; endl &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Analyser chaque fichier de logs</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;analyserFichier("logs_test/windows_events.txt", "Evenements systeme", rapport);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;analyserFichier("logs_test/network_logs.txt", "Connexions reseau", rapport);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;analyserFichier("logs_test/user_actions.txt", "Actions utilisateur", rapport);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Écrire la conclusion</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; endl &lt;&lt; "--- FIN DU RAPPORT ---" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport.close();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Rapport genere avec succes : logs_test/rapport_synthese.txt" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "Erreur : Impossible de creer le fichier rapport" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                    </div>
+
+                    <div class="code-template">
+<span class="todo">// TODO : Créer la fonction d'analyse individuelle</span><br>
+void analyserFichier(string nomFichier, string typeLog, ofstream& rapport) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="background: #ffeb3b; padding: 2px 5px; font-weight: bold;">// IMPORTANT : Pour GCC 5.1, ajouter .c_str()</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;ifstream fichier(nomFichier<span style="background: #4caf50; color: white; padding: 2px 5px; font-weight: bold;">.c_str()</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (fichier.is_open()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string ligne;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int compteur = 0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Écrire le titre dans le rapport</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; "--- " &lt;&lt; typeLog &lt;&lt; " ---" &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Compter les lignes et analyser</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (getline(fichier, ligne)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;compteur++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Optionnel - analyser le contenu (ERROR, UAC, etc.)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="todo">// TODO : Écrire les statistiques</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; "Nombre total d'evenements : " &lt;&lt; compteur &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fichier.close();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rapport &lt;&lt; "ERREUR : Fichier " &lt;&lt; nomFichier &lt;&lt; " non trouvé" &lt;&lt; endl &lt;&lt; endl;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                    </div>
+
+                    <div class="conseils">
+                        <h4>📊 Exemple de rapport généré :</h4>
+                        <div class="code-snippet">
+==========================================<br>
+RAPPORT DE SYNTHESE DES LOGS - BTS CIEL<br>
+Date de generation : Mar 15 2024<br>
+==========================================<br>
+<br>
+--- Evenements systeme ---<br>
+Nombre total d'evenements : 7<br>
+<br>
+--- Connexions reseau ---<br>
+Nombre total d'evenements : 7<br>
+<br>
+--- Actions utilisateur ---<br>
+Nombre total d'evenements : 7<br>
+<br>
+--- FIN DU RAPPORT ---
+                        </div>
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Paramètre par référence</h4>
+                        <p>Notez l'utilisation de <code>ofstream& rapport</code> dans la fonction <code>analyserFichier()</code>. Le <code>&</code> permet de passer l'objet par référence pour pouvoir écrire dedans depuis la fonction.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION COMPILATION POUR ITÉRATION 4 -->
+            <div class="etape">
+                <div class="etape-header">🔧 Compilation et Exécution</div>
+                <div class="etape-content">
+                    <div class="compilation-section">
+                        <h4>📝 Rappel : Compilation multi-fichiers</h4>
+                        
+                        <div class="command-line">
+                            <span class="comment"># Toujours compiler TOUS les fichiers .cpp</span><br>
+                            <span class="command">g++ -o gestion_logs.exe main.cpp Menu/menu.cpp</span><br>
+                            <br>
+                            <span class="comment"># Exécution dans PowerShell</span><br>
+                            <span class="command">.\gestion_logs.exe</span><br>
+                            <br>
+                            <span class="comment"># Test de lecture des fichiers</span><br>
+                            <span class="comment"># Vérifiez que le dossier logs_test/ existe !</span>
+                        </div>
+                    </div>
+
+                    <div class="attention">
+                        <h4>⚠️ Erreurs fréquentes avec les fichiers</h4>
+                        <ul>
+                            <li><strong>"Impossible d'ouvrir le fichier"</strong> : Vérifiez que le dossier logs_test/ existe</li>
+                            <li><strong>Chemin incorrect</strong> : Le chemin est relatif à l'endroit où vous exécutez le programme</li>
+                            <li><strong>Fichiers vides</strong> : Vérifiez que vous avez bien copié le contenu des fichiers de test</li>
+                            <li><strong>Erreur de compilation avec string</strong> : Ajoutez <code>.c_str()</code> pour GCC 5.1</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gcc-fix">
+                <h4>📌 Résumé des corrections pour GCC 5.1</h4>
+                <p><strong>Dans menu.cpp, modifier ces 2 lignes :</strong></p>
+                <ul>
+                    <li>Dans <code>lireFichierLogs()</code> : <code>ifstream fichier(nomFichier.c_str());</code></li>
+                    <li>Dans <code>analyserFichier()</code> : <code>ifstream fichier(nomFichier.c_str());</code></li>
+                </ul>
+            </div>
+
+            <div class="checklist">
+                <h3>📝 Checklist de validation Itération 4</h3>
+                <ul>
+                    <li>Les fichiers de test sont créés dans logs_test/</li>
+                    <li>La bibliothèque &lt;fstream&gt; est incluse</li>
+                    <li>La fonction lireFichierLogs() est implémentée avec <code>.c_str()</code> pour GCC 5.1</li>
+                    <li>Les options 1, 2, 3 lisent les vrais fichiers</li>
+                    <li>La gestion d'erreur is_open() fonctionne</li>
+                    <li>L'option 4 génère un rapport de synthèse</li>
+                    <li>Le rapport contient des statistiques de base</li>
+                    <li>Les fichiers sont correctement fermés</li>
+                    <li>Le programme gère les erreurs de fichiers manquants</li>
+                    <li>Le comptage d'événements est affiché</li>
+                    <li>La compilation fonctionne avec <code>g++ -o gestion_logs.exe main.cpp Menu/menu.cpp</code></li>
+                    <li>L'exécution fonctionne avec <code>.\gestion_logs.exe</code> dans PowerShell</li>
+                    <li>Le code est bien documenté et formaté</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <h3>🎯 Résultats attendus finaux</h3>
+                <ul>
+                    <li><strong>✅</strong> Utilisation correcte de ifstream pour la lecture (avec .c_str() pour GCC 5.1)</li>
+                    <li><strong>✅</strong> Utilisation correcte d'ofstream pour l'écriture</li>
+                    <li><strong>✅</strong> Lecture ligne par ligne avec getline()</li>
+                    <li><strong>✅</strong> Création de rapports automatisés</li>
+                    <li><strong>✅</strong> Gestion des erreurs d'ouverture de fichiers</li>
+                    <li><strong>✅</strong> Organisation modulaire maintenue</li>
+                    <li><strong>✅</strong> Code documenté selon les standards</li>
+                </ul>
+            </div>
+
+            <div class="attention">
+                <h4>🚀 Avantages de cette approche avec fichiers</h4>
+                <ul>
+                    <li><strong>Réalisme</strong> : Manipulation de vraies données comme en entreprise</li>
+                    <li><strong>Automatisation</strong> : Génération de rapports sans intervention manuelle</li>
+                    <li><strong>Évolutivité</strong> : Facilité d'ajout de nouveaux types de logs</li>
+                    <li><strong>Persistance</strong> : Sauvegarde des analyses pour consultation ultérieure</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const iterations = document.querySelectorAll('.iteration');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Retirer la classe active de tous les liens
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Ajouter la classe active au lien cliqué
+                    this.classList.add('active');
+                    
+                    // Cacher toutes les itérations
+                    iterations.forEach(iter => iter.classList.remove('active'));
+                    
+                    // Afficher l'itération correspondante
+                    const iterNum = this.dataset.iteration;
+                    document.getElementById('iteration' + iterNum).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
